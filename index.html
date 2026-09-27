@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="author" content="Jerin T Varghese"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Shifts"><meta name="theme-color" content="#2C336E"><link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="author" content="Jerin T Varghese"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Shifts"><meta name="theme-color" content="#2C336E"><link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" sizes="32x32" href="logo-32.png"><link rel="apple-touch-icon" href="logo-apple-180.png"></head><body>
 <title>Vistakon Crew Calendar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -86,7 +86,64 @@
     padding-inline: 16px;
     padding-block: 16px 40px;
   }
-  body.selecting { padding-bottom: 170px; }
+  body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
+  body.selecting { padding-bottom: calc(250px + env(safe-area-inset-bottom, 0px)); }
+  main { display: contents; }
+  .page { display: grid; gap: 16px; min-width: 0; }
+  .page > *, .wrap > * { min-width: 0; }
+  html, body { overflow-x: hidden; }
+  /* Tab bar */
+  .tabbar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 9;
+    background: var(--surface); border-top: 1px solid var(--line);
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+  }
+  .tabbar-in { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .tabbar button { border: 0; background: none; display: grid; justify-items: center; gap: 3px; padding: 6px 0 4px; border-radius: 10px; color: var(--muted); font-size: 12px; font-weight: 600; }
+  .tabbar svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .tabbar svg circle[r="1.6"] { fill: currentColor; }
+  .tabbar button[aria-current="page"] { color: var(--ink); }
+  .tabbar-in { position: relative; }
+  .tabbar button { position: relative; z-index: 1; transition: color .2s ease; }
+  .tab-ind {
+    position: absolute; top: 4px; left: 0; width: calc((100% - 12px) / 4); height: 32px; z-index: 0;
+    display: flex; justify-content: center; pointer-events: none;
+    transform: translateX(calc(var(--tab, 0) * (100% + 4px)));
+    transition: transform .35s cubic-bezier(.3, 1.3, .5, 1);
+  }
+  .tab-ind::before { content: ""; width: 56px; height: 32px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); }
+  .tabbar button[aria-current="page"] svg { animation: tabPop .35s ease-out; }
+  @keyframes tabPop { 0% { transform: scale(.8); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+  /* Today summary */
+  .summary { padding: 14px; display: grid; gap: 12px; }
+  .summary-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .summary { touch-action: pan-y; }
+  .summary-head { display: grid !important; grid-template-columns: auto 1fr auto; align-items: center; }
+  .sum-title { display: grid; justify-items: center; text-align: center; gap: 3px; min-width: 0; }
+  .sum-title .muted { font-size: 13px; }
+  .sum-body { display: grid; gap: 12px; }
+  .sum-body.slide-l { animation: slideL .22s ease-out; }
+  .sum-body.slide-r { animation: slideR .22s ease-out; }
+  @keyframes slideL { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+  @keyframes slideR { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .sum-body.slide-l, .sum-body.slide-r { animation: none; } }
+  .sum-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .dots { display: inline-flex; gap: 5px; align-items: center; }
+  .dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--line); display: block; }
+  .dots i.on { background: var(--ink); width: 16px; border-radius: 3px; }
+  .dots i.now { box-shadow: 0 0 0 1.5px var(--sel); }
+  .sum-pay { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 12px 14px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--line); font-size: 14px; }
+  .sum-pay b { font-family: var(--display); font-size: 28px; line-height: 1; font-variant-numeric: tabular-nums; }
+  /* More page */
+  .more { padding: 14px; display: grid; gap: 12px; }
+  .crew-big { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .crew-big button { border: 1px solid var(--line); background: var(--surface-2); border-radius: 12px; padding: 12px 4px; display: grid; justify-items: center; gap: 4px; }
+  .crew-big b { font-family: var(--display); font-size: 30px; line-height: 1; }
+  .crew-big span { font-size: 11.5px; color: var(--muted); text-align: center; line-height: 1.25; }
+  .crew-big button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .crew-big button[aria-pressed="true"] span { color: inherit; opacity: .8; }
+  .legend-list { flex-direction: column; gap: 10px; font-size: 14px; }
+  footer.about { max-width: none; }
   .wrap { max-width: 560px; margin: 0 auto; display: grid; gap: 16px; }
 
   button, input { font: inherit; color: inherit; }
@@ -267,10 +324,46 @@
   .credit { border-top: 1px solid var(--line); padding-top: 12px; }
   .credit strong { color: var(--ink); font-weight: 600; }
 
+  /* Pay calculator */
+  .pay { padding: 14px; display: grid; gap: 14px; }
+  .pay-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .chip-btn[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .pay-settings { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); }
+  .pay-settings label { display: grid; gap: 4px; min-width: 0; }
+  .pay-settings input[type="number"] { height: 42px; border: 1px solid var(--line); border-radius: 8px; padding: 0 10px; background: var(--surface); width: 100%; min-width: 0; font-variant-numeric: tabular-nums; }
+  .pay-settings .chk { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; font-size: 14px; }
+  .pay-settings .chk input { width: 20px; height: 20px; margin: 0; accent-color: var(--leave); }
+  .fn-row { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 10px; }
+  .fn-row .chk { grid-column: auto; }
+  .fn-hours { display: flex !important; align-items: center; gap: 8px; }
+  .fn-hours input { width: 72px !important; }
+  .pay-settings input:disabled { opacity: .45; }
+  .pay-period { display: grid; gap: 8px; }
+  .range-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .range-inputs label { display: grid; gap: 4px; min-width: 0; }
+  .range-inputs input { height: 42px; border: 1px solid var(--line); border-radius: 8px; padding: 0 10px; background: var(--surface-2); width: 100%; min-width: 0; }
+  .pay-total { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 14px; border-radius: 12px; background: var(--ink); color: var(--bg); }
+  .pay-total b { font-family: var(--display); font-weight: 700; font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: .01em; }
+  .pay-total span { font-size: 13px; opacity: .8; }
+  .pay-table-wrap { overflow-x: auto; }
+  .pay-table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .pay-table th { text-align: left; font-family: var(--mono); font-size: 11px; font-weight: 400; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; padding: 0 6px 6px; border-bottom: 1px solid var(--line); }
+  .pay-table td { padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .pay-table td small { display: block; color: var(--muted); font-size: 12px; }
+  .pay-table .num { text-align: right; white-space: nowrap; }
+  .pay-table tfoot td { font-weight: 700; border-bottom: 0; }
+  .pay-table .sw { margin-right: 6px; vertical-align: -1px; }
+  .pay details { font-size: 14px; }
+  .pay summary { cursor: pointer; font-weight: 600; }
+  .ot-days { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
+  .ot-days li { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--line); font-variant-numeric: tabular-nums; }
+  .pay-rules { margin: 0; font-size: 12.5px; color: var(--muted); max-width: 65ch; }
+  .pay-empty { margin: 0; font-size: 14px; color: var(--muted); padding: 12px; border: 1px dashed var(--line); border-radius: 10px; }
+
   /* Selection bar */
   .selbar {
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 8;
-    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    position: fixed; left: 0; right: 0; bottom: calc(66px + env(safe-area-inset-bottom, 0px)); z-index: 8;
+    padding: 12px 16px 12px;
     background: var(--surface); border-top: 2px solid var(--sel);
     box-shadow: 0 -6px 24px rgba(0,0,0,.12);
   }
@@ -284,12 +377,12 @@
   /* Toast */
   .toast {
     position: fixed; left: 50%; transform: translateX(-50%); z-index: 12;
-    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(84px + env(safe-area-inset-bottom, 0px));
     background: var(--ink); color: var(--bg); border-radius: 12px; padding: 10px 10px 10px 16px;
     display: flex; align-items: center; gap: 14px; width: max-content; max-width: calc(100% - 32px);
     font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.25);
   }
-  body.selecting .toast { bottom: calc(170px + env(safe-area-inset-bottom, 0px)); }
+  body.selecting.on-calendar .toast { bottom: calc(230px + env(safe-area-inset-bottom, 0px)); }
   .toast button { background: transparent; border: 1px solid color-mix(in srgb, var(--bg) 40%, transparent); color: var(--bg); border-radius: 8px; height: 32px; padding: 0 12px; font-weight: 600; }
 
   /* Day editor sheet */
@@ -322,6 +415,7 @@
     .cell .tag { display: none; }
     .strip { gap: 2px; padding-inline: 12px; }
     .counts { grid-template-columns: repeat(2, 1fr); }
+    .pay-settings { grid-template-columns: 1fr 1fr; }
   }
   @media (prefers-reduced-motion: no-preference) {
     .sheet { animation: rise .18s ease-out; }
@@ -330,6 +424,125 @@
   @media (prefers-reduced-motion: reduce) {
     .cell.flash { animation: none; outline: 3px solid var(--sel); }
     .cell { transition: none; }
+  }
+
+  /* ---------- Motion ---------- */
+  @media (prefers-reduced-motion: no-preference) {
+    /* page transitions */
+    .page.enter-r > * { animation: pageInR .38s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i, 0) * 55ms); }
+    .page.enter-l > * { animation: pageInL .38s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i, 0) * 55ms); }
+    .page.enter-up > * { animation: pageUp .45s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i, 0) * 70ms); }
+    @keyframes pageInR { from { opacity: 0; transform: translateX(36px); } to { opacity: 1; transform: none; } }
+    @keyframes pageInL { from { opacity: 0; transform: translateX(-36px); } to { opacity: 1; transform: none; } }
+    @keyframes pageUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+    header.top { animation: pageUp .4s ease-out both; }
+
+    /* today card */
+    .today-status { animation: statusIn .5s cubic-bezier(.2, .8, .2, 1) both .1s; }
+    @keyframes statusIn { from { opacity: 0; letter-spacing: .08em; } to { opacity: 1; letter-spacing: .01em; } }
+    .strip.anim .strip-cell i { animation: barIn .4s ease-out both; animation-delay: calc(var(--k, 0) * 25ms + 120ms); transform-origin: bottom; }
+    @keyframes barIn { from { transform: scaleY(0); opacity: 0; } to { transform: none; opacity: 1; } }
+
+    /* month grid */
+    .grid.slide-l .cell:not(.blank) { animation: cellL .3s ease-out both; animation-delay: calc(var(--c, 0) * 6ms); }
+    .grid.slide-r .cell:not(.blank) { animation: cellR .3s ease-out both; animation-delay: calc(var(--c, 0) * 6ms); }
+    .grid.fade-in .cell:not(.blank) { animation: cellUp .35s ease-out both; animation-delay: calc(var(--c, 0) * 8ms); }
+    @keyframes cellL { from { opacity: 0; transform: translateX(22px); } to { opacity: 1; transform: none; } }
+    @keyframes cellR { from { opacity: 0; transform: translateX(-22px); } to { opacity: 1; transform: none; } }
+    @keyframes cellUp { from { opacity: 0; transform: translateY(8px) scale(.96); } to { opacity: 1; transform: none; } }
+    .cell.sel::after { animation: selPop .22s cubic-bezier(.3, 1.5, .5, 1) both; }
+    @keyframes selPop { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
+    .cell { transition: opacity .2s ease, transform .15s ease, filter .15s ease; }
+    .cell:active { transform: scale(.94); }
+
+    /* picker, bars, sheets, toast */
+    .picker:not([hidden]) { animation: dropIn .25s ease-out both; transform-origin: top; }
+    .picker-months button { animation: cellUp .3s ease-out both; animation-delay: calc(var(--m, 0) * 20ms); }
+    @keyframes dropIn { from { opacity: 0; transform: translateY(-8px) scaleY(.96); } to { opacity: 1; transform: none; } }
+    .selbar:not([hidden]) { animation: barUp .28s cubic-bezier(.2, .8, .2, 1) both; }
+    @keyframes barUp { from { transform: translateY(100%); opacity: 0; } to { transform: none; opacity: 1; } }
+    .toast:not([hidden]) { animation: toastIn .3s cubic-bezier(.3, 1.4, .5, 1) both; }
+    @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 16px) scale(.96); } to { opacity: 1; transform: translate(-50%, 0); } }
+    .scrim:not([hidden]) { animation: fadeIn .2s ease-out both; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .ot-row:not([hidden]), #selActions:not([hidden]) { animation: fadeIn .2s ease-out both; }
+
+    /* pay */
+    .anim .pay-total { animation: pageUp .35s ease-out both; }
+    .anim .pay-table tbody tr { animation: pageUp .3s ease-out both; animation-delay: calc(var(--r, 0) * 45ms + 80ms); }
+    .pay-settings:not([hidden]) { animation: dropIn .25s ease-out both; transform-origin: top; }
+    .anim > .counts > div, .sum-body.anim .counts > div { animation: pageUp .3s ease-out both; animation-delay: calc(var(--r, 0) * 45ms); }
+
+    /* buttons and chips */
+    .btn, .chip-btn, .icon-btn, .seg button, .crew-big button, .stat, .picker-months button, .strip-cell, .today-main {
+      transition: transform .12s ease, background-color .2s ease, color .2s ease, border-color .2s ease;
+    }
+    .btn:active, .chip-btn:active, .icon-btn:active, .seg button:active, .crew-big button:active, .stat:active, .picker-months button:active, .strip-cell:active { transform: scale(.95); }
+    .today-main:active { transform: scale(.985); }
+    .seg button[aria-pressed="true"], .crew-big button[aria-pressed="true"] { animation: tabPop .3s ease-out; }
+    .today-main { transition: background-color .35s ease, color .35s ease, transform .12s ease; }
+  }
+
+  /* ---------- Desktop and tablet layout ---------- */
+  .side-brand { display: none; }
+  @media (min-width: 900px) {
+    body { padding-left: 252px; padding-right: 32px; padding-block: 28px 48px; }
+    body.selecting { padding-bottom: 190px; }
+    .wrap { max-width: 1180px; margin: 0; gap: 20px; }
+    header.top .brand { display: none; }
+    header.top { justify-content: flex-end; }
+
+    .tabbar {
+      top: 0; bottom: 0; left: 0; right: auto; width: 224px;
+      border-top: 0; border-right: 1px solid var(--line);
+      padding: 26px 14px; display: flex; flex-direction: column; gap: 26px;
+    }
+    .side-brand { display: block; padding: 0 10px; font-family: var(--display); font-weight: 700; font-size: 24px; letter-spacing: .06em; text-transform: uppercase; line-height: 1; }
+    .side-brand small { display: block; font-family: var(--mono); font-weight: 400; font-size: 11px; letter-spacing: .03em; text-transform: none; color: var(--muted); margin-top: 6px; }
+    .tabbar-in { grid-template-columns: 1fr; gap: 6px; max-width: none; margin: 0; }
+    .tabbar button { height: 46px; grid-template-columns: 24px 1fr; justify-items: start; align-items: center; gap: 12px; padding: 0 14px; font-size: 15px; }
+    .tabbar button svg { margin: 0 !important; padding: 0 !important; }
+    .tab-ind { top: 0; width: 100%; height: 46px; transform: translateY(calc(var(--tab, 0) * 52px)); }
+    .tab-ind::before { width: 100%; height: 46px; border-radius: 12px; }
+
+    #page-today { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: start; }
+    #page-more { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+    #page-more > section:last-child { grid-column: 1 / -1; }
+    #page-calendar { max-width: 860px; }
+    #page-pay { max-width: 760px; }
+
+    .cell { aspect-ratio: 1 / .8; padding: 7px 9px; }
+    .cell .n { font-size: 23px; }
+    .cell .tag { font-size: 10.5px; }
+    .grid { gap: 6px; }
+    button.cell:hover { filter: none; box-shadow: 0 0 0 2px var(--ink); }
+    .strip { padding-inline: 18px; }
+
+    .selbar { left: 224px; bottom: 0; padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
+    .selbar-in { max-width: 860px; margin: 0; }
+    .toast { bottom: 28px; left: calc(50% + 112px); }
+    body.selecting.on-calendar .toast { bottom: 180px; }
+
+    .scrim { left: 0; }
+    .sheet {
+      top: 50%; bottom: auto; left: calc(50% + 112px); transform: translate(-50%, -50%);
+      width: min(520px, calc(100% - 290px)); border-radius: 16px; border-bottom: 1px solid var(--line);
+      padding: 22px; max-height: 88%;
+    }
+  }
+  @media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+    .sheet { animation: modalIn .2s ease-out; }
+    @keyframes modalIn { from { opacity: 0; transform: translate(-50%, -46%) scale(.98); } to { opacity: 1; transform: translate(-50%, -50%); } }
+    .toast:not([hidden]) { animation: toastInD .3s cubic-bezier(.3, 1.4, .5, 1) both; }
+    @keyframes toastInD { from { opacity: 0; transform: translate(-50%, 16px); } to { opacity: 1; transform: translate(-50%, 0); } }
+  }
+  /* Wide screens: calendar and pay side by side */
+  @media (min-width: 1240px) {
+    .wrap.split { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); align-items: start; }
+    .wrap.split > header.top { grid-column: 1 / -1; }
+    .wrap.split #page-calendar, .wrap.split #page-pay { max-width: none; }
+    .wrap.split #page-pay { position: sticky; top: 20px; }
+    .wrap.split .selbar-in { max-width: none; }
   }
 </style>
 
@@ -343,7 +556,8 @@
       <button type="button" id="crew-D" data-crew="D" aria-pressed="false">D</button>
     </div>
   </header>
-
+  <main>
+  <div class="page" id="page-today" data-page="today">
   <section class="card today" aria-live="polite">
     <button type="button" class="today-main" id="todayMain" aria-label="Edit today">
       <div>
@@ -359,8 +573,27 @@
       <div><span class="k">Next day off</span><button type="button" class="link-btn" id="nextOff">—</button></div>
     </div>
   </section>
-
-
+  <section class="card summary" id="summaryCard">
+    <div class="summary-head">
+      <button type="button" class="icon-btn" id="sumPrev" aria-label="Previous pay period">‹</button>
+      <div class="sum-title"><h2 class="h2" id="sumTitle">This pay period</h2><span class="muted" id="sumDates"></span></div>
+      <button type="button" class="icon-btn" id="sumNext" aria-label="Next pay period">›</button>
+    </div>
+    <div class="sum-body" id="sumBody">
+    <div class="counts" id="sumCounts"></div>
+    <div class="sum-pay" id="sumPay"></div>
+    </div>
+    <div class="sum-foot">
+      <span class="dots" id="sumDots" aria-hidden="true"></span>
+      <div class="actions">
+        <button type="button" class="chip-btn" id="sumNow" hidden>Back to current</button>
+        <button type="button" class="chip-btn" id="sumPayBtn">See full pay</button>
+      </div>
+    </div>
+    <p class="hint" style="margin:0">Swipe left or right, or use the arrows, to see other pay periods.</p>
+  </section>
+  </div>
+  <div class="page" id="page-calendar" data-page="calendar" hidden>
   <section class="card month" id="monthCard">
     <div class="month-head">
       <button type="button" class="title-btn" id="monthTitleBtn" aria-expanded="false" aria-controls="picker"><h2 class="h2" id="monthTitle">—</h2><span class="caret" aria-hidden="true">▾</span></button>
@@ -399,14 +632,102 @@
       <span><i class="sw L"></i>Annual leave</span>
       <span><i class="sw OT"></i>Overtime</span>
     </div>
-    <div class="sync" id="sync"><i></i><span id="syncText">Saved on this device</span></div>
   </section>
-
-  <footer>
-    <div>Rota follows the Vistakon 8-week pattern, counted from Monday 10 October 2005. Leave counts only days you would have worked. Your leave and overtime marks are saved on this phone or computer only. Check against your official rota if anything changes on site.</div>
+  </div>
+  <div class="page" id="page-pay" data-page="pay" hidden>
+  <section class="card pay" id="payCard">
+    <div class="pay-head">
+      <h2 class="h2">Pay calculator</h2>
+      <button type="button" class="chip-btn" id="payEditBtn" aria-expanded="true" aria-controls="paySettings">Pay details</button>
+    </div>
+    <div class="pay-settings" id="paySettings">
+      <label><span class="k">Hourly rate (€)</span><input type="number" id="payRate" step="0.01" min="0" inputmode="decimal" placeholder="e.g. 18.50"></label>
+      <label><span class="k">Hours per shift</span><input type="number" id="payShiftHrs" step="0.25" min="1" max="24" inputmode="decimal" value="12"></label>
+      <label><span class="k">Shift allowance (%)</span><input type="number" id="payAllow" step="0.5" min="0" max="100" inputmode="decimal" value="0"></label>
+      <label class="chk"><input type="checkbox" id="payLeave" checked><span>Pay annual leave at basic rate</span></label>
+      <div class="fn-row">
+        <label class="chk"><input type="checkbox" id="payFn"><span>Fortnight completion pay</span></label>
+        <label class="fn-hours"><input type="number" id="payFnHrs" step="0.5" min="0" max="24" inputmode="decimal" value="3" aria-label="Extra hours per complete fortnight"><span class="k">extra hrs per fortnight</span></label>
+      </div>
+    </div>
+    <div class="pay-period">
+      <span class="k">Pay period</span>
+      <div class="quick-row" id="payPresets">
+        <button type="button" class="chip-btn" data-p="period">This pay period</button>
+        <button type="button" class="chip-btn" data-p="lastperiod">Last pay period</button>
+        <button type="button" class="chip-btn" data-p="nextperiod">Next pay period</button>
+        <button type="button" class="chip-btn" data-p="month">This month</button>
+        <button type="button" class="chip-btn" data-p="lastmonth">Last month</button>
+        <button type="button" class="chip-btn" data-p="view">Month in calendar</button>
+        <button type="button" class="chip-btn" data-p="sel" id="paySelChip" hidden>Selected days</button>
+      </div>
+      <div class="range-inputs">
+        <label><span class="k">From</span><input type="date" id="payFrom"></label>
+        <label><span class="k">To</span><input type="date" id="payTo"></label>
+      </div>
+    </div>
+    <div id="payOut"></div>
+    <p class="pay-rules">Overtime on a Sunday is paid at double time for every hour. On other days, the first 4 hours are time-and-a-half and the rest are double time. Fortnight completion pay, if switched on, adds the extra hours at basic rate once for each pay fortnight. Pay fortnights run Monday to Sunday and are paid the Friday after. Figures are gross, before tax, PRSI and USC.</p>
+  </section>
+  </div>
+  <div class="page" id="page-more" data-page="more" hidden>
+  <section class="card more">
+    <h2 class="h2">Your shift</h2>
+    <p class="muted" style="margin:0">Pick your crew. Everything in the app follows this rota.</p>
+    <div class="crew-big" role="group" aria-label="Choose your shift" id="crewBig">
+      <button type="button" data-crew="A" aria-pressed="false"><b>A</b><span></span></button>
+      <button type="button" data-crew="B" aria-pressed="false"><b>B</b><span></span></button>
+      <button type="button" data-crew="C" aria-pressed="false"><b>C</b><span></span></button>
+      <button type="button" data-crew="D" aria-pressed="false"><b>D</b><span></span></button>
+    </div>
+  </section>
+  <section class="card more">
+    <h2 class="h2">Colour key</h2>
+    <div class="legend legend-list">
+      <span><i class="sw D"></i>Day</span>
+      <span><i class="sw N"></i>Night (you go in that evening)</span>
+      <span><i class="sw E"></i>Finish nights in the morning</span>
+      <span><i class="sw"></i>Off</span>
+      <span><i class="sw L"></i>Annual leave</span>
+      <span><i class="sw OT"></i>Overtime</span>
+    </div>
+  </section>
+  <section class="card more">
+    <h2 class="h2">About</h2>
+    <div class="sync" id="sync"><i></i><span id="syncText">Saved on this device</span></div>
+  <footer class="about">
+    <div>Rota follows the Vistakon 8-week pattern, counted from Monday 10 October 2005. Leave counts only days you would have worked. Your leave, overtime and pay details are saved on this phone or computer only. Check against your official rota if anything changes on site.</div>
     <div class="credit">Designed and built by <strong>Jerin T Varghese</strong></div>
   </footer>
+  </section>
+  </div>
+  </main>
+
+
+
+
+
 </div>
+
+
+<nav class="tabbar" aria-label="App sections">
+  <div class="side-brand" aria-hidden="true">Shift Calendar<small>4 crews · 8-week rotation</small></div>
+  <div class="tabbar-in">
+    <span class="tab-ind" id="tabInd" aria-hidden="true"></span>
+    <button type="button" data-go="today" aria-current="page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg>
+      <span>Today</span></button>
+    <button type="button" data-go="calendar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M7.5 13.5h2M11 13.5h2M14.5 13.5h2M7.5 17h2M11 17h2"/></svg>
+      <span>Calendar</span></button>
+    <button type="button" data-go="pay">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.6a4.2 4.2 0 1 0 0 6.8M7 10.8h6M7 13.2h6"/></svg>
+      <span>Pay</span></button>
+    <button type="button" data-go="more">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg>
+      <span>More</span></button>
+  </div>
+</nav>
 
 <!-- Multi-select bar -->
 <div class="selbar" id="selbar" hidden>
@@ -420,6 +741,7 @@
       <button type="button" class="btn ot" id="selOT">Overtime</button>
       <button type="button" class="btn" id="selClear">Clear marks</button>
       <button type="button" class="btn ghost" id="selMonth">Whole month</button>
+      <button type="button" class="btn ghost" id="selPay">Work out pay</button>
     </div>
     <div class="ot-row" id="selOTRow" hidden>
       <input type="number" id="selOTHours" min="0.5" max="24" step="0.5" value="12" inputmode="decimal" aria-label="Overtime hours per day">
@@ -474,7 +796,7 @@
 
 <script>
 /*
-  Shift Calendar by Jerin Varghese.
+  Shift Calendar by Jerin T Varghese.
   The ROTA pattern below is adapted from viscalendar (https://github.com/phryniszak/viscalendar):
   MIT License, Copyright (c) 2020 phryniszak.
   Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
@@ -513,11 +835,15 @@
   let selecting = false;
   const sel = new Set();
   let filter = null;
+  let payPreset = "period", payRange = null, payOffset = 0, sumOffset = 0;
+  const PAGES = ["today", "calendar", "pay", "more"];
+  let page = "today";
 
   const lsGet = (k, fb) => { try { const v = localStorage.getItem(k); return v == null ? fb : JSON.parse(v); } catch (e) { return fb; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
   { const c = lsGet("crew2", null); if (c && ROTA[c]) crew = c; }
   marks = lsGet("marks", {}) || {};
+  let pay = Object.assign({ rate: null, shiftHrs: 12, allow: 0, payLeave: true, fnOn: true, fnHrs: 3 }, lsGet("pay", {}) || {});
 
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -589,11 +915,13 @@
     $("cycleDay").textContent = i < 0 ? "" : "day " + (i + 1) + "/56";
 
     const strip = $("strip"); strip.innerHTML = "";
+    if (!strip.dataset.done) { strip.dataset.done = "1"; strip.classList.add("anim"); setTimeout(() => strip.classList.remove("anim"), 1200); }
     for (let k = 0; k < 14; k++) {
       const d = addDays(today, k), cc = onLeave(d) ? "L" : code(d);
       const el = document.createElement("button");
       el.type = "button";
       el.className = "strip-cell" + (k === 0 ? " now" : "");
+      el.style.setProperty("--k", k);
       el.dataset.key = key(d);
       const desc = fmtShort(d) + ": " + (cc === "L" ? "Annual leave" : LABEL[cc]) + (hasOT(d) ? " + overtime" : "");
       el.title = desc; el.setAttribute("aria-label", desc);
@@ -610,6 +938,45 @@
     const no = addDays(today, o);
     $("nextOff").textContent = fmtShort(no) + " (" + relative(o) + ")" + (onLeave(no) ? " · leave" : "");
     $("nextOff").dataset.key = key(no);
+    renderSummary();
+    // crew cards on the More page
+    document.querySelectorAll("#crewBig button").forEach(b => {
+      const saved = crew; crew = b.dataset.crew;
+      const c = code(today);
+      crew = saved;
+      b.querySelector("span").textContent = (c === "D" ? "Days" : c === "S" || c === "N" ? "Nights" : c === "E" ? "Finishing" : "Off") + " today";
+      b.setAttribute("aria-pressed", String(b.dataset.crew === crew));
+    });
+  }
+
+  function renderSummary() {
+    if (!$("sumCounts") || typeof calcPay !== "function") return;
+    const q = periodOf(today, sumOffset);
+    const first = q.start, last = q.end;
+    const days = []; for (let d = first; between(d, last) >= 0; d = addDays(d, 1)) days.push(d);
+    let done = 0, left = 0;
+    days.forEach(d => { if (goingIn(d) && rotaWorks(code(d))) { if (between(d, today) > 0) done++; else left++; } });
+    const r = calcPay(days);
+    $("sumTitle").textContent = sumOffset === 0 ? "This pay period" : sumOffset === -1 ? "Last pay period" : sumOffset === 1 ? "Next pay period" : (sumOffset < 0 ? Math.abs(sumOffset) + " periods ago" : "In " + sumOffset + " periods");
+    $("sumDates").textContent = fmtShort(first) + " – " + fmtShort(last);
+    $("sumNow").hidden = sumOffset === 0;
+    let dots = "";
+    for (let k = -3; k <= 3; k++) { const o = sumOffset + k; dots += '<i class="' + (k === 0 ? "on" : "") + (o === 0 && k !== 0 ? " now" : "") + '"></i>'; }
+    $("sumDots").innerHTML = dots;
+    $("sumCounts").innerHTML =
+      '<div><b>' + done + '</b><span>' + (left === 0 && done > 0 ? "Shifts worked" : "Shifts worked") + '</span></div>' +
+      '<div><b>' + left + '</b><span>' + (done === 0 && left > 0 ? "Shifts rostered" : "Shifts to go") + '</span></div>' +
+      '<div><b>' + r.leaveN + '</b><span>Leave days</span></div>' +
+      '<div><b>' + hrs(r.ot15 + r.ot2 + r.otSun) + '</b><span>Overtime hrs</span></div>';
+    const pdRel = between(today, q.payday);
+    const payLine = (pdRel < 0 ? 'Paid ' : 'Paid on ') + fmt(q.payday, { weekday: "long", day: "numeric", month: "short" }) + ' (' + relative(pdRel) + ')';
+    $("sumPay").innerHTML = r.has
+      ? '<span>' + payLine + '<br><span class="muted">Estimated gross · ' + hrs(r.hours) + ' hrs</span></span><b id="sumTotalNum">' + money(r.total) + '</b>'
+      : '<span>' + payLine + '<br><span class="muted">Add your hourly rate on the Pay page to see your estimated pay.</span></span>';
+    $("sumCounts").querySelectorAll("div").forEach((d, i) => d.style.setProperty("--r", i));
+    const sb = $("sumBody");
+    if (sumAnimNext) { sumAnimNext = false; sb.classList.remove("anim"); void sb.offsetWidth; sb.classList.add("anim"); } else sb.classList.remove("anim");
+    if (r.has) { countUp($("sumTotalNum"), lastSumTotal == null ? 0 : lastSumTotal, r.total, money); lastSumTotal = r.total; }
   }
 
   // ---------- render: month ----------
@@ -637,6 +1004,7 @@
       const el = document.createElement("button");
       el.type = "button";
       el.dataset.key = k;
+      el.style.setProperty("--c", dnum);
       el.className = "cell " + c + (al ? " L m-leave" : "") + " m-" + kd + (m && m.ot ? " m-ot" : "") +
         (sameDay(d, today) ? " today" : "") + (sel.has(k) ? " sel" : "");
       let desc = fmt(d, { weekday: "long", day: "numeric", month: "long" }) + ": " + (al ? "Annual leave (rota: " + LABEL[c] + ")" : LABEL[c]);
@@ -667,14 +1035,17 @@
     $("filterNote").textContent = filter ? "Showing " + names[filter] + ". Tap the total again to show all days." : "Tap a total to highlight those days.";
     $("hint").textContent = selecting ? "Tap days to add or remove them." : "Tap a day to edit. Press and hold to select several.";
     $("btnSelect").textContent = selecting ? "Done" : "Select days";
+    renderPay();
   }
 
   // ---------- render: selection bar ----------
   let otEntry = false;
   function renderBar() {
-    $("selbar").hidden = !selecting;
-    document.body.classList.toggle("selecting", selecting);
-    if (!selecting) return;
+    const showBar = selecting && !$("page-calendar").hidden;
+    $("selbar").hidden = !showBar;
+    document.body.classList.toggle("selecting", showBar);
+    document.body.classList.toggle("on-calendar", !$("page-calendar").hidden);
+    if (!showBar) return;
     const keys = [...sel];
     const n = keys.length;
     let rostered = 0, allLeave = n > 0, need = 0;
@@ -689,6 +1060,7 @@
     $("selLeave").textContent = allLeave ? "Remove leave" : "Annual leave" + (need ? " (" + need + ")" : "");
     $("selLeave").dataset.remove = allLeave ? "1" : "";
     ["selLeave", "selOT", "selClear"].forEach(id => $(id).disabled = n === 0 || readOnly);
+    $("selPay").disabled = n === 0;
     $("selActions").hidden = otEntry;
     $("selOTRow").hidden = !otEntry;
   }
@@ -791,10 +1163,11 @@
   }));
 
   function showInCalendar(d) {
+    const monthChanged = view.getFullYear() !== d.getFullYear() || view.getMonth() !== d.getMonth();
     view = new Date(d.getFullYear(), d.getMonth(), 1);
+    if (monthChanged && page === "calendar") setTimeout(() => animGrid("fade-in"), 0);
+    if (page !== "calendar") showPage("calendar");
     renderMonth();
-    const card = $("monthCard");
-    try { card.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }); } catch (e) { card.scrollIntoView(); }
     const cell = grid.querySelector('.cell[data-key="' + key(d) + '"]');
     if (cell) { cell.classList.remove("flash"); void cell.offsetWidth; cell.classList.add("flash"); }
   }
@@ -816,7 +1189,7 @@
       let work = 0, al = 0;
       for (let d = 1; d <= days; d++) { const dd = new Date(pickYear, m, d); if (rotaWorks(code(dd))) { if (onLeave(dd)) al++; else work++; } }
       const b = document.createElement("button");
-      b.type = "button"; b.dataset.m = m;
+      b.type = "button"; b.dataset.m = m; b.style.setProperty("--m", m);
       const isCur = pickYear === view.getFullYear() && m === view.getMonth();
       const isNow = pickYear === today.getFullYear() && m === today.getMonth();
       b.className = (isCur ? "cur" : "") + (isNow ? " now" : "");
@@ -836,7 +1209,200 @@
   $("pyMonths").addEventListener("click", e => {
     const b = e.target.closest("button[data-m]"); if (!b || b.disabled) return;
     view = new Date(pickYear, Number(b.dataset.m), 1);
-    closePicker(); renderMonth();
+    closePicker(); renderMonth(); animGrid("fade-in");
+  });
+
+  // ---------- number animation ----------
+  const reduceMotion = () => { try { return matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { return false; } };
+  function countUp(el, from, to, format) {
+    if (!el) return;
+    if (reduceMotion() || from == null || Math.abs(to - from) < 0.005) { el.textContent = format(to); return; }
+    const t0 = performance.now(), dur = 550;
+    const step = t => {
+      const p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = format(from + (to - from) * e);
+      if (p < 1) requestAnimationFrame(step);
+    };
+    el.textContent = format(from);
+    requestAnimationFrame(step);
+  }
+  let lastPayTotal = null, lastSumTotal = null, payAnimNext = false, sumAnimNext = true;
+
+  // ---------- pay calculator ----------
+  const money = v => new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR" }).format(v);
+  // Pay fortnights run Monday to Sunday (e.g. 14–27 Sept 2026) and are paid the Friday after.
+  const PAY_ANCHOR = new Date(2026, 8, 14);
+  function periodOf(d, offset) {
+    const n = Math.floor(between(PAY_ANCHOR, d) / 14) + (offset || 0);
+    const start = addDays(PAY_ANCHOR, n * 14);
+    return { start, end: addDays(start, 13), payday: addDays(start, 18) };
+  }
+  function presetRange(p) {
+    if (p === "period") { const q = periodOf(today); return [q.start, q.end]; }
+    if (p === "lastperiod") { const q = periodOf(today, -1); return [q.start, q.end]; }
+    if (p === "nextperiod") { const q = periodOf(today, 1); return [q.start, q.end]; }
+    if (p === "poff") { const q = periodOf(today, payOffset); return [q.start, q.end]; }
+    const dow = (today.getDay() + 6) % 7; // Monday = 0
+    const monday = addDays(today, -dow);
+    if (p === "week") return [monday, addDays(monday, 6)];
+    if (p === "lastweek") return [addDays(monday, -7), addDays(monday, -1)];
+    if (p === "2weeks") return [addDays(monday, -14), addDays(monday, -1)];
+    if (p === "month") return [new Date(today.getFullYear(), today.getMonth(), 1), new Date(today.getFullYear(), today.getMonth() + 1, 0)];
+    if (p === "lastmonth") return [new Date(today.getFullYear(), today.getMonth() - 1, 1), new Date(today.getFullYear(), today.getMonth(), 0)];
+    if (p === "view") return [new Date(view.getFullYear(), view.getMonth(), 1), new Date(view.getFullYear(), view.getMonth() + 1, 0)];
+    return null;
+  }
+  function payDays() {
+    if (payPreset === "sel") return [...sel].sort().map(fromKey);
+    const r = payPreset === "custom" ? payRange : presetRange(payPreset);
+    if (!r) return [];
+    const out = [];
+    for (let d = r[0]; between(d, r[1]) >= 0 && out.length < 400; d = addDays(d, 1)) out.push(d);
+    return out;
+  }
+  function calcPay(days) {
+    const rate = Number(pay.rate), sh = Number(pay.shiftHrs) || 0, allow = Number(pay.allow) || 0;
+    let dayN = 0, nightN = 0, leaveN = 0, ot15 = 0, ot2 = 0, otSun = 0;
+    const otList = [];
+    days.forEach(d => {
+      const c = code(d), m = mark(d), al = !!(m && m.al);
+      if (rotaWorks(c)) { if (al) leaveN++; else if (c === "D") dayN++; else nightN++; }
+      if (m && m.ot) {
+        const h = Number(m.otHours) || 0;
+        if (d.getDay() === 0) { otSun += h; otList.push({ d, h, a: 0, b: 0, sun: h }); }
+        else { const a = Math.min(4, h); ot15 += a; ot2 += h - a; otList.push({ d, h, a, b: h - a, sun: 0 }); }
+      }
+    });
+    const basicH = (dayN + nightN) * sh, leaveH = pay.payLeave ? leaveN * sh : 0;
+    // Count each pay fortnight (Mon–Sun) that the range covers for at least 11 of its 14 days.
+    let fnCount = 0;
+    if (pay.fnOn && days.length) {
+      const per = {};
+      days.forEach(d => { const k = key(periodOf(d).start); per[k] = (per[k] || 0) + 1; });
+      fnCount = Object.values(per).filter(v => v >= 11).length;
+    }
+    const fnH = fnCount * (Number(pay.fnHrs) || 0);
+    const has = rate > 0;
+    const r = {
+      dayN, nightN, leaveN, basicH, leaveH, ot15, ot2, otSun, otList, has, fnCount, fnH, fnLen: days.length,
+      basic: basicH * rate, allowance: basicH * rate * allow / 100, leave: leaveH * rate,
+      o15: ot15 * rate * 1.5, o2: ot2 * rate * 2, oSun: otSun * rate * 2, fn: fnH * rate
+    };
+    r.total = r.basic + r.allowance + r.leave + r.o15 + r.o2 + r.oSun + r.fn;
+    r.hours = basicH + leaveH + ot15 + ot2 + otSun + fnH;
+    return r;
+  }
+  function renderPay() {
+    if (!$("payOut")) return;
+    // settings inputs (don't overwrite what the user is typing)
+    const act = document.activeElement;
+    if (act !== $("payRate")) $("payRate").value = pay.rate == null || pay.rate === "" ? "" : pay.rate;
+    if (act !== $("payShiftHrs")) $("payShiftHrs").value = pay.shiftHrs;
+    if (act !== $("payAllow")) $("payAllow").value = pay.allow;
+    $("payLeave").checked = !!pay.payLeave;
+    $("payFn").checked = !!pay.fnOn;
+    if (act !== $("payFnHrs")) $("payFnHrs").value = pay.fnHrs;
+    $("payFnHrs").disabled = !pay.fnOn;
+    $("payEditBtn").textContent = Number(pay.rate) > 0
+      ? money(Number(pay.rate)) + "/h · " + hrs(Number(pay.shiftHrs) || 0) + "h shifts" + (Number(pay.allow) ? " · +" + hrs(Number(pay.allow)) + "%" : "") + (pay.fnOn ? " · +" + hrs(Number(pay.fnHrs) || 0) + "h/fortnight" : "")
+      : "Pay details";
+
+    $("paySelChip").hidden = !(selecting && sel.size) && payPreset !== "sel";
+    document.querySelectorAll("#payPresets [data-p]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.p === payPreset)));
+
+    const days = payDays();
+    let label;
+    if (payPreset === "sel") label = plural(days.length, "selected day");
+    else if (days.length) {
+      label = fmtShort(days[0]) + " – " + fmtShort(days[days.length - 1]);
+      if (["period", "lastperiod", "nextperiod", "poff"].includes(payPreset)) {
+        const pd = periodOf(days[0]).payday;
+        label += " · paid " + fmtShort(pd) + " (" + relative(between(today, pd)) + ")";
+      }
+    }
+    if (payPreset !== "sel" && days.length && document.activeElement !== $("payFrom") && document.activeElement !== $("payTo")) {
+      $("payFrom").value = key(days[0]); $("payTo").value = key(days[days.length - 1]);
+    }
+    const out = $("payOut");
+    if (payPreset === "custom" && payRange && between(payRange[0], payRange[1]) < 0) { out.innerHTML = '<p class="pay-empty">The end date is before the start date. Pick a later end date.</p>'; return; }
+    if (!days.length) { out.innerHTML = '<p class="pay-empty">' + (payPreset === "sel" ? "Select days in the calendar first." : "Pick a pay period.") + '</p>'; return; }
+
+    const r = calcPay(days);
+    const amt = v => r.has ? money(v) : "—";
+    const rows = [];
+    rows.push('<tr><td><i class="sw D"></i>Basic pay<small>' + plural(r.dayN, "day shift") + ' · ' + plural(r.nightN, "night shift") + '</small></td><td class="num">' + hrs(r.basicH) + '</td><td class="num">' + amt(r.basic) + '</td></tr>');
+    if (Number(pay.allow) > 0) rows.push('<tr><td>Shift allowance<small>' + hrs(Number(pay.allow)) + '% of basic</small></td><td class="num"></td><td class="num">' + amt(r.allowance) + '</td></tr>');
+    if (r.leaveN) rows.push('<tr><td><i class="sw L"></i>Annual leave<small>' + plural(r.leaveN, "shift") + (pay.payLeave ? " at basic rate" : " · not paid") + '</small></td><td class="num">' + hrs(r.leaveH) + '</td><td class="num">' + amt(r.leave) + '</td></tr>');
+    if (pay.fnOn) rows.push('<tr><td>Fortnight completion pay<small>' + (r.fnCount
+      ? plural(r.fnCount, "pay fortnight") + ' × ' + hrs(Number(pay.fnHrs) || 0) + 'h at basic rate'
+      : 'only paid for a full pay fortnight (Mon–Sun)') + '</small></td><td class="num">' + hrs(r.fnH) + '</td><td class="num">' + amt(r.fn) + '</td></tr>');
+    if (r.ot15) rows.push('<tr><td><i class="sw OT"></i>Overtime at 1.5×<small>first 4 hours, Mon–Sat</small></td><td class="num">' + hrs(r.ot15) + '</td><td class="num">' + amt(r.o15) + '</td></tr>');
+    if (r.ot2) rows.push('<tr><td><i class="sw OT"></i>Overtime at 2×<small>after 4 hours, Mon–Sat</small></td><td class="num">' + hrs(r.ot2) + '</td><td class="num">' + amt(r.o2) + '</td></tr>');
+    if (r.otSun) rows.push('<tr><td><i class="sw OT"></i>Sunday overtime at 2×<small>all hours</small></td><td class="num">' + hrs(r.otSun) + '</td><td class="num">' + amt(r.oSun) + '</td></tr>');
+
+    let otDetail = "";
+    if (r.otList.length) {
+      otDetail = '<details><summary>Overtime by day (' + r.otList.length + ')</summary><ul class="ot-days">' +
+        r.otList.map(o => '<li><span>' + fmtShort(o.d) + '<br><small class="muted">' +
+          (o.sun ? hrs(o.sun) + 'h × 2 (Sunday)' : hrs(o.a) + 'h × 1.5' + (o.b ? ' + ' + hrs(o.b) + 'h × 2' : '')) +
+          '</small></span><b>' + (r.has ? money((o.sun * 2 + o.a * 1.5 + o.b * 2) * Number(pay.rate)) : hrs(o.h) + 'h') + '</b></li>').join("") +
+        '</ul></details>';
+    }
+
+    out.innerHTML =
+      '<div style="display:grid;gap:12px">' +
+      '<div class="pay-total"><div><span>' + esc(label) + '</span><br><b id="payTotalNum">' + (r.has ? money(r.total) : hrs(r.hours) + " hrs") + '</b></div>' +
+      '<span>' + (r.has ? hrs(r.hours) + ' paid hours · gross' : 'Enter your hourly rate to see pay') + '</span></div>' +
+      '<div class="pay-table-wrap"><table class="pay-table"><thead><tr><th>Item</th><th class="num">Hours</th><th class="num">Amount</th></tr></thead><tbody>' +
+      rows.join("") + '</tbody><tfoot><tr><td>Total gross</td><td class="num">' + hrs(r.hours) + '</td><td class="num">' + amt(r.total) + '</td></tr></tfoot></table></div>' +
+      otDetail + '</div>';
+    out.querySelectorAll(".pay-table tbody tr").forEach((tr, i) => tr.style.setProperty("--r", i));
+    const pk = payPreset + "|" + (days.length ? key(days[0]) + key(days[days.length - 1]) : "");
+    if (pk !== out.dataset.pk || payAnimNext) { out.dataset.pk = pk; payAnimNext = false; out.classList.remove("anim"); void out.offsetWidth; out.classList.add("anim"); }
+    else out.classList.remove("anim");
+    if (r.has) { countUp($("payTotalNum"), lastPayTotal == null ? 0 : lastPayTotal, r.total, money); lastPayTotal = r.total; }
+  }
+
+  let payTimer = null;
+  function savePay() {
+    lsSet("pay", pay);
+    clearTimeout(payTimer);
+    payTimer = setTimeout(() => {
+      if (store === "cloud" && db && uid && !readOnly) db.collection("data/users/" + uid).doc("settings").set({ crew, pay }).catch(() => {});
+    }, 800);
+  }
+  function readPayInputs() {
+    const rate = $("payRate").value.trim();
+    pay.rate = rate === "" ? null : Math.max(0, parseFloat(rate) || 0);
+    const sh = parseFloat($("payShiftHrs").value); if (sh > 0 && sh <= 24) pay.shiftHrs = sh;
+    const al = parseFloat($("payAllow").value); pay.allow = al >= 0 && al <= 100 ? al : 0;
+    pay.payLeave = $("payLeave").checked;
+    pay.fnOn = $("payFn").checked;
+    const fh = parseFloat($("payFnHrs").value); if (fh >= 0 && fh <= 24) pay.fnHrs = fh;
+    savePay(); renderPay();
+  }
+  ["payRate", "payShiftHrs", "payAllow"].forEach(id => $(id).addEventListener("input", readPayInputs));
+  $("payLeave").addEventListener("change", readPayInputs);
+  $("payFn").addEventListener("change", readPayInputs);
+  $("payFnHrs").addEventListener("input", readPayInputs);
+  $("payEditBtn").addEventListener("click", () => {
+    const open = $("paySettings").hidden;
+    $("paySettings").hidden = !open; $("payEditBtn").setAttribute("aria-expanded", String(open));
+    if (open) $("payRate").focus();
+  });
+  if (Number(pay.rate) > 0) { $("paySettings").hidden = true; $("payEditBtn").setAttribute("aria-expanded", "false"); }
+  $("payPresets").addEventListener("click", e => {
+    const b = e.target.closest("[data-p]"); if (!b) return;
+    payPreset = b.dataset.p; renderPay();
+  });
+  ["payFrom", "payTo"].forEach(id => $(id).addEventListener("change", () => {
+    const f = $("payFrom").value, t = $("payTo").value;
+    if (!f || !t) return;
+    payPreset = "custom"; payRange = [fromKey(f), fromKey(t)]; renderPay();
+  }));
+  $("selPay").addEventListener("click", () => {
+    if (!sel.size) return;
+    payPreset = "sel"; showPage("pay");
   });
 
   // ---------- day editor ----------
@@ -927,6 +1493,62 @@
     }
   }
 
+  // ---------- pages ----------
+  let firstShow = true;
+  const wideMQ = (() => { try { return matchMedia("(min-width: 1240px)"); } catch (e) { return { matches: false, addEventListener() {} }; } })();
+  function showPage(p, opts) {
+    if (!PAGES.includes(p)) p = "today";
+    const split = wideMQ.matches && (p === "calendar" || p === "pay");
+    document.querySelector(".wrap").classList.toggle("split", split);
+    const dir = PAGES.indexOf(p) - PAGES.indexOf(page);
+    const changed = p !== page || firstShow;
+    page = p;
+    PAGES.forEach(n => { $("page-" + n).hidden = !(n === p || (split && (n === "calendar" || n === "pay"))); });
+    if (split) { renderPay(); }
+    const el = $("page-" + p);
+    if (changed) {
+      [...el.children].forEach((c, i) => c.style.setProperty("--i", i));
+      el.classList.remove("enter-l", "enter-r", "enter-up"); void el.offsetWidth;
+      el.classList.add(firstShow ? "enter-up" : dir < 0 ? "enter-l" : "enter-r");
+      firstShow = false;
+    }
+    $("tabInd").style.setProperty("--tab", PAGES.indexOf(p));
+    document.querySelectorAll(".tabbar [data-go]").forEach(b => { if (b.dataset.go === p) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+    closeSheet();
+    if (p !== "calendar") closePicker();
+    renderBar();
+    if (p === "pay") { payAnimNext = true; renderPay(); }
+    if (p === "today" && changed) { sumAnimNext = true; renderSummary(); }
+    if (!(opts && opts.keepScroll)) { try { window.scrollTo(0, 0); } catch (e) {} }
+    try { if (location.hash !== "#" + p) history.replaceState(null, "", "#" + p); } catch (e) {}
+  }
+  document.querySelectorAll(".tabbar [data-go]").forEach(b => b.addEventListener("click", () => showPage(b.dataset.go)));
+  try { wideMQ.addEventListener("change", () => showPage(page, { keepScroll: true })); } catch (e) {}
+  $("sumPayBtn").addEventListener("click", () => { payOffset = sumOffset; payPreset = sumOffset === 0 ? "period" : sumOffset === -1 ? "lastperiod" : sumOffset === 1 ? "nextperiod" : "poff"; showPage("pay"); });
+  function moveSum(n) {
+    sumOffset = n === 0 ? 0 : sumOffset + n;
+    sumAnimNext = true;
+    renderSummary();
+    const body = $("sumBody");
+    body.classList.remove("slide-l", "slide-r"); void body.offsetWidth;
+    body.classList.add(n > 0 ? "slide-l" : "slide-r");
+  }
+  $("sumPrev").addEventListener("click", () => moveSum(-1));
+  $("sumNext").addEventListener("click", () => moveSum(1));
+  $("sumNow").addEventListener("click", () => { const d = -sumOffset; sumOffset = 0; renderSummary(); const body = $("sumBody"); body.classList.remove("slide-l", "slide-r"); void body.offsetWidth; body.classList.add(d > 0 ? "slide-l" : "slide-r"); });
+  (() => {
+    let sx = null, sy = null;
+    const card = $("summaryCard");
+    card.addEventListener("touchstart", e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+    card.addEventListener("touchend", e => {
+      if (sx === null) return;
+      const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) moveSum(dx < 0 ? 1 : -1);
+      sx = null;
+    });
+  })();
+  document.querySelectorAll("#crewBig button").forEach(b => b.addEventListener("click", () => setCrew(b.dataset.crew, true)));
+
   // ---------- crew & navigation ----------
   function setCrew(c, persist) {
     crew = c;
@@ -935,10 +1557,11 @@
     if (!persist) return;
     lsSet("crew2", c);
     if (store === "cloud" && db && uid && !readOnly) {
-      db.collection("data/users/" + uid).doc("settings").set({ crew: c }).catch(() => {});
+      db.collection("data/users/" + uid).doc("settings").set({ crew: c, pay }).catch(() => {});
     }
   }
-  function shiftMonth(n) { view = new Date(view.getFullYear(), view.getMonth() + n, 1); renderMonth(); if (!$("picker").hidden) { pickYear = view.getFullYear(); renderPicker(); } }
+  function animGrid(cls) { const g = $("grid"); g.classList.remove("slide-l", "slide-r", "fade-in"); void g.offsetWidth; g.classList.add(cls); clearTimeout(g._t); g._t = setTimeout(() => g.classList.remove(cls), 700); }
+  function shiftMonth(n) { view = new Date(view.getFullYear(), view.getMonth() + n, 1); renderMonth(); animGrid(n > 0 ? "slide-l" : "slide-r"); if (!$("picker").hidden) { pickYear = view.getFullYear(); renderPicker(); } }
 
   document.querySelectorAll("#crewPicker button").forEach(b => b.addEventListener("click", () => setCrew(b.dataset.crew, true)));
   $("btnPrev").addEventListener("click", () => shiftMonth(-1));
@@ -957,6 +1580,7 @@
 
   setCrew(crew, false);
   setSync("", "Saved on this device");
+  { const h = (location.hash || "").replace("#", ""); showPage(PAGES.includes(h) ? h : "today"); }
 
   // ---------- account storage (only where the page is allowed to use it) ----------
   (async () => {
@@ -974,7 +1598,7 @@
         const next = {}; let savedCrew = null;
         snap.docs.forEach(doc => {
           const v = doc.data(); if (!v) return;
-          if (doc.id === "settings") { savedCrew = v.crew; return; }
+          if (doc.id === "settings") { savedCrew = v.crew; if (v.pay && typeof v.pay === "object") { pay = Object.assign({ rate: null, shiftHrs: 12, allow: 0, payLeave: true, fnOn: true, fnHrs: 3 }, v.pay); lsSet("pay", pay); if (Number(pay.rate) > 0 && document.activeElement !== $("payRate")) { $("paySettings").hidden = true; $("payEditBtn").setAttribute("aria-expanded", "false"); } } return; }
           if (v.date) next[v.date] = { al: !!v.al, ot: !!v.ot, otHours: Number(v.otHours) || 0, note: v.note || "" };
         });
         if (first) {
@@ -991,7 +1615,7 @@
             })();
             toMove.forEach(k => next[k] = local[k]);
           }
-          if (!savedCrew && !readOnly) col.doc("settings").set({ crew }).catch(() => {});
+          if (!savedCrew && !readOnly) col.doc("settings").set({ crew, pay }).catch(() => {});
         }
         marks = next;
         if (savedCrew && ROTA[savedCrew] && savedCrew !== crew) { crew = savedCrew; lsSet("crew2", crew); setCrew(crew, false); }
