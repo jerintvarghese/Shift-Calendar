@@ -1,0 +1,14 @@
+{
+  "name": "Shift Calendar",
+  "short_name": "Shifts",
+  "description": "A, B, C and D crew shift calendar with annual leave and overtime.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#1D2250",
+  "theme_color": "#2C336E",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
