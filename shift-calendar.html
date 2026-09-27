@@ -1,0 +1,629 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Shift Calendar"><meta name="theme-color" content="#2C336E"></head><body>
+<title>Vistakon Crew Calendar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #ECEFF2;
+    --surface: #FFFFFF;
+    --surface-2: #F5F7F9;
+    --ink: #181C24;
+    --muted: #5B6472;
+    --line: #D3D8DE;
+    --day: #F2B233;
+    --day-ink: #3A2800;
+    --night: #2C336E;
+    --night-ink: #FFFFFF;
+    --leave: #1E8A6E;
+    --leave-ink: #FFFFFF;
+    --leave-soft: #D5EEE6;
+    --ot: #D2492A;
+    --ot-ink: #FFFFFF;
+    --today-ring: #181C24;
+    --focus: #2C336E;
+    --scrim: rgba(16, 18, 23, .45);
+    --display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+    --body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #101217;
+      --surface: #181B22;
+      --surface-2: #1F232B;
+      --ink: #E7EAEF;
+      --muted: #98A0AD;
+      --line: #2C313B;
+      --day: #E3A62B;
+      --day-ink: #2A1C00;
+      --night: #5B64CC;
+      --night-ink: #FFFFFF;
+      --leave: #2FA886;
+      --leave-ink: #06221A;
+      --leave-soft: #173A30;
+      --ot: #F0673F;
+      --ot-ink: #230A03;
+      --today-ring: #E7EAEF;
+      --focus: #8E96E8;
+      --scrim: rgba(0, 0, 0, .6);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #101217;
+    --surface: #181B22;
+    --surface-2: #1F232B;
+    --ink: #E7EAEF;
+    --muted: #98A0AD;
+    --line: #2C313B;
+    --day: #E3A62B;
+    --day-ink: #2A1C00;
+    --night: #5B64CC;
+    --night-ink: #FFFFFF;
+    --leave: #2FA886;
+    --leave-ink: #06221A;
+    --leave-soft: #173A30;
+    --ot: #F0673F;
+    --ot-ink: #230A03;
+    --today-ring: #E7EAEF;
+    --focus: #8E96E8;
+    --scrim: rgba(0, 0, 0, .6);
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.45;
+    padding-inline: 16px;
+    padding-block: 16px 40px;
+  }
+  .wrap { max-width: 560px; margin: 0 auto; display: grid; gap: 16px; }
+
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  button:focus-visible, input:focus-visible, .cell:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  /* Header */
+  header.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .brand { font-family: var(--display); font-weight: 700; font-size: 22px; letter-spacing: .06em; text-transform: uppercase; line-height: 1; }
+  .brand small { display: block; font-family: var(--mono); font-weight: 400; font-size: 11px; letter-spacing: .04em; text-transform: none; color: var(--muted); margin-top: 4px; }
+  .seg { display: inline-flex; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; }
+  .seg button {
+    border: 0; background: transparent; border-radius: 7px;
+    font-family: var(--display); font-weight: 700; font-size: 17px; letter-spacing: .04em;
+    width: 40px; height: 34px; color: var(--muted);
+  }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+  /* Today panel */
+  .today { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: grid; }
+  .today-main { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: end; padding: 18px 18px 16px; }
+  .today-main.is-day { background: var(--day); color: var(--day-ink); }
+  .today-main.is-night { background: var(--night); color: var(--night-ink); }
+  .today-main.is-leave { background: var(--leave); color: var(--leave-ink); }
+  .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .03em; opacity: .8; }
+  .today-status { font-family: var(--display); font-weight: 700; font-size: 44px; line-height: .95; text-transform: uppercase; letter-spacing: .01em; margin-top: 6px; text-wrap: balance; }
+  .today-sub { font-size: 14px; margin-top: 6px; opacity: .85; }
+  .cycle { text-align: right; font-family: var(--mono); font-size: 12px; opacity: .8; line-height: 1.3; }
+  .cycle b { display: block; font-family: var(--display); font-size: 28px; font-weight: 600; opacity: 1; line-height: 1; }
+
+  .strip { display: grid; grid-template-columns: repeat(14, 1fr); gap: 3px; padding: 12px 18px 14px; }
+  .strip-cell { display: grid; gap: 4px; justify-items: center; position: relative; }
+  .strip-cell span { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+  .strip-cell i { display: block; width: 100%; height: 22px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--line); position: relative; }
+  .strip-cell i.D { background: var(--day); border-color: var(--day); }
+  .strip-cell i.S, .strip-cell i.N { background: var(--night); border-color: var(--night); }
+  .strip-cell i.E { background: linear-gradient(var(--night) 0 30%, var(--surface-2) 30%); }
+  .strip-cell i.L { background: var(--leave); border-color: var(--leave); }
+  .strip-cell i.ot::after { content: ""; position: absolute; right: -2px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--ot); border: 1.5px solid var(--surface); }
+  .strip-cell.now span { color: var(--ink); font-weight: 500; }
+  .strip-cell.now i { outline: 2px solid var(--today-ring); outline-offset: 1px; }
+  .next-row { display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 0 18px 16px; font-size: 14px; }
+  .next-row div { display: grid; }
+  .k { font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  .next-row .v { font-weight: 600; }
+
+  /* Month */
+  .month { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 14px 16px; display: grid; gap: 12px; }
+  .month-head { display: flex; align-items: center; gap: 8px; }
+  .month-title { font-family: var(--display); font-weight: 700; font-size: 23px; letter-spacing: .02em; text-transform: uppercase; flex: 1; line-height: 1; }
+  .icon-btn { border: 1px solid var(--line); background: var(--surface-2); border-radius: 8px; height: 34px; min-width: 34px; padding: 0 10px; font-size: 14px; font-weight: 600; }
+  .hint { font-size: 13px; color: var(--muted); margin-top: -4px; }
+  .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; touch-action: pan-y; }
+  .dow { font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: center; padding-bottom: 2px; text-transform: uppercase; }
+  .cell {
+    position: relative; aspect-ratio: 1 / 1.05; max-width: 100%; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--surface-2);
+    display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; padding: 5px 6px;
+    font-variant-numeric: tabular-nums; overflow: hidden; text-align: left; width: 100%;
+  }
+  button.cell:hover { filter: brightness(.96); }
+  .cell .n { font-family: var(--display); font-weight: 600; font-size: 19px; line-height: 1; position: relative; }
+  .cell .tag { font-family: var(--mono); font-size: 9.5px; letter-spacing: .04em; text-transform: uppercase; line-height: 1; position: relative; }
+  .cell.blank { background: transparent; border-color: transparent; }
+  .cell.D { background: var(--day); border-color: var(--day); color: var(--day-ink); }
+  .cell.S, .cell.N { background: var(--night); border-color: var(--night); color: var(--night-ink); }
+  .cell.E::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 26%; background: var(--night); }
+  .cell.E .n { margin-top: 22%; }
+  .cell.E .tag, .cell.O .tag { color: var(--muted); }
+  .cell.L {
+    background: repeating-linear-gradient(135deg, var(--leave) 0 6px, color-mix(in srgb, var(--leave) 82%, var(--surface)) 6px 12px);
+    border-color: var(--leave); color: var(--leave-ink);
+  }
+  .cell.L .n, .cell.L .tag { color: var(--leave-ink); }
+  .cell.L.E::before { display: none; }
+  .cell.L.E .n { margin-top: 0; }
+  .ot-badge {
+    position: absolute; top: 4px; right: 4px; background: var(--ot); color: var(--ot-ink);
+    font-family: var(--mono); font-size: 9px; font-weight: 500; line-height: 1; padding: 3px 4px; border-radius: 4px;
+  }
+  .note-dot { position: absolute; bottom: 5px; right: 5px; width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: .7; }
+  .cell.today { outline: 2.5px solid var(--today-ring); outline-offset: 1.5px; }
+
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 8px; border-top: 1px solid var(--line); padding-top: 12px; }
+  .stat { display: grid; gap: 2px; align-content: start; }
+  .stat b { font-family: var(--display); font-weight: 700; font-size: 26px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat span { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: none; border: 1px solid var(--line); background: var(--surface-2); }
+  .sw.D { background: var(--day); border-color: var(--day); }
+  .sw.N { background: var(--night); border-color: var(--night); }
+  .sw.E { background: linear-gradient(var(--night) 0 35%, var(--surface-2) 35%); }
+  .sw.L { background: var(--leave); border-color: var(--leave); }
+  .sw.OT { background: var(--ot); border-color: var(--ot); border-radius: 50%; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 13px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+  .sync { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .sync i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); display: inline-block; }
+  .sync.ok i { background: var(--leave); }
+  .sync.err i { background: var(--ot); }
+
+  footer { font-size: 12.5px; color: var(--muted); line-height: 1.5; max-width: 60ch; }
+
+  /* Day editor sheet */
+  .scrim { position: fixed; inset: 0; background: var(--scrim); z-index: 10; }
+  .sheet {
+    position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); z-index: 11;
+    width: min(560px, 100%); background: var(--surface); color: var(--ink);
+    border-radius: 16px 16px 0 0; border: 1px solid var(--line); border-bottom: 0;
+    padding: 18px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+    display: grid; gap: 14px; max-height: 90%; overflow-y: auto;
+  }
+  .sheet h2 { margin: 0; font-family: var(--display); font-weight: 700; font-size: 26px; text-transform: uppercase; line-height: 1; }
+  .sheet .rota-line { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); margin-top: 6px; }
+  .opt { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: center; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); }
+  .opt input[type="checkbox"] { width: 22px; height: 22px; margin: 0; accent-color: var(--leave); }
+  .opt.ot input[type="checkbox"] { accent-color: var(--ot); }
+  .opt label { font-weight: 600; font-size: 16px; }
+  .opt .desc { grid-column: 2; font-size: 13px; color: var(--muted); }
+  .opt .extra { grid-column: 2; display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+  .opt .extra input { width: 80px; height: 36px; border: 1px solid var(--line); border-radius: 8px; padding: 0 10px; background: var(--surface); font-variant-numeric: tabular-nums; }
+  .quick { display: flex; gap: 6px; }
+  .quick button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; height: 30px; padding: 0 12px; font-size: 13px; font-weight: 600; }
+  .field { display: grid; gap: 6px; }
+  .field input { height: 40px; border: 1px solid var(--line); border-radius: 8px; padding: 0 12px; background: var(--surface-2); width: 100%; }
+  .sheet-actions { display: flex; gap: 8px; justify-content: space-between; flex-wrap: wrap; }
+  .sheet-actions div { display: flex; gap: 8px; }
+  .btn { height: 42px; border-radius: 10px; padding: 0 18px; font-weight: 600; border: 1px solid var(--line); background: var(--surface-2); }
+  .btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .btn.ghost { background: transparent; color: var(--ot); border-color: transparent; padding: 0 6px; }
+  .sheet .msg { font-size: 13px; color: var(--ot); }
+
+  @media (max-width: 380px) {
+    .today-status { font-size: 36px; }
+    .cell .tag { display: none; }
+    .strip { gap: 2px; padding-inline: 12px; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .sheet { animation: rise .18s ease-out; }
+    @keyframes rise { from { transform: translate(-50%, 16px); opacity: .6; } to { transform: translate(-50%, 0); opacity: 1; } }
+  }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">Shift Calendar<small>4 crews · 8-week rotation</small></div>
+    <div class="seg" role="group" aria-label="Choose your shift" id="crewPicker">
+      <button type="button" id="crew-A" data-crew="A" aria-pressed="false">A</button>
+      <button type="button" id="crew-B" data-crew="B" aria-pressed="false">B</button>
+      <button type="button" id="crew-C" data-crew="C" aria-pressed="true">C</button>
+      <button type="button" id="crew-D" data-crew="D" aria-pressed="false">D</button>
+    </div>
+  </header>
+
+  <section class="today" aria-live="polite">
+    <div class="today-main" id="todayMain">
+      <div>
+        <div class="eyebrow" id="todayDate">Today</div>
+        <div class="today-status" id="todayStatus">—</div>
+        <div class="today-sub" id="todaySub"></div>
+      </div>
+      <div class="cycle"><b id="cycleWeek">–</b>week of 8<br><span id="cycleDay"></span></div>
+    </div>
+    <div class="strip" id="strip" aria-label="Next 14 days"></div>
+    <div class="next-row">
+      <div><span class="k">Next shift</span><span class="v" id="nextShift">—</span></div>
+      <div><span class="k">Next day off</span><span class="v" id="nextOff">—</span></div>
+    </div>
+  </section>
+
+  <section class="month">
+    <div class="month-head">
+      <div class="month-title" id="monthTitle">—</div>
+      <button type="button" class="icon-btn" id="btnToday">Today</button>
+      <button type="button" class="icon-btn" id="btnPrev" aria-label="Previous month">‹</button>
+      <button type="button" class="icon-btn" id="btnNext" aria-label="Next month">›</button>
+    </div>
+    <div class="hint">Tap a day to mark annual leave or overtime.</div>
+    <div class="grid" id="grid"></div>
+    <div class="stats">
+      <div class="stat"><b id="statDay">0</b><span><i class="sw D"></i>Day shifts</span></div>
+      <div class="stat"><b id="statNight">0</b><span><i class="sw N"></i>Night shifts</span></div>
+      <div class="stat"><b id="statOff">0</b><span><i class="sw"></i>Days off</span></div>
+      <div class="stat"><b id="statOT">0</b><span><i class="sw OT"></i><span id="statOTLabel">Overtime hrs</span></span></div>
+      <div class="stat"><b id="statALm">0</b><span><i class="sw L"></i>Leave this month</span></div>
+      <div class="stat"><b id="statALy">0</b><span><i class="sw L"></i><span id="statALyLabel">Leave this year</span></span></div>
+    </div>
+    <div class="legend">
+      <span><i class="sw D"></i>Day</span>
+      <span><i class="sw N"></i>Night (you go in that evening)</span>
+      <span><i class="sw E"></i>Finish nights in the morning</span>
+      <span><i class="sw"></i>Off</span>
+      <span><i class="sw L"></i>Annual leave</span>
+      <span><i class="sw OT"></i>Overtime</span>
+    </div>
+    <div class="sync" id="sync"><i></i><span id="syncText">Connecting…</span></div>
+  </section>
+
+  <footer>
+    Rota follows the Vistakon 8-week pattern, counted from Monday 10 October 2005. Leave counts only days you would have worked. Your leave and overtime marks are saved on this phone or computer only. Check against your official rota if anything changes on site.
+  </footer>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <div>
+    <h2 id="sheetTitle">—</h2>
+    <div class="rota-line"><i class="sw" id="sheetSw"></i><span id="sheetRota">—</span></div>
+  </div>
+  <div class="opt">
+    <input type="checkbox" id="optAL">
+    <label for="optAL">Annual leave</label>
+    <div class="desc" id="optALdesc">Take this day as leave.</div>
+  </div>
+  <div class="opt ot">
+    <input type="checkbox" id="optOT">
+    <label for="optOT">Overtime</label>
+    <div class="desc">Extra hours worked on this day.</div>
+    <div class="extra">
+      <input type="number" id="otHours" min="0.5" max="24" step="0.5" inputmode="decimal" aria-label="Overtime hours" value="12">
+      <span class="k">hours</span>
+      <div class="quick">
+        <button type="button" data-h="4">4</button>
+        <button type="button" data-h="8">8</button>
+        <button type="button" data-h="12">12</button>
+      </div>
+    </div>
+  </div>
+  <div class="field">
+    <label class="k" for="noteIn">Note</label>
+    <input type="text" id="noteIn" maxlength="120" placeholder="e.g. covering for B shift, approved by supervisor">
+  </div>
+  <div class="msg" id="sheetMsg" hidden></div>
+  <div class="sheet-actions">
+    <button type="button" class="btn ghost" id="btnClear">Clear day</button>
+    <div>
+      <button type="button" class="btn" id="btnCancel">Cancel</button>
+      <button type="button" class="btn primary" id="btnSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  // D = day, S = first night of a block, N = night, E = finishing nights (morning), O = off
+  const ROTA = {
+    A: "ODDOODD" + "DOODDOO" + "ODDOODD" + "DOODDOO" + "SNEOSNN" + "EOSNEOO" + "SNEOSNN" + "EOSNEOO",
+    B: "SNEOSNN" + "EOSNEOO" + "SNEOSNN" + "EOSNEOO" + "ODDOODD" + "DOODDOO" + "ODDOODD" + "DOODDOO",
+    C: "EOODDOO" + "ODDOODD" + "DOODDOO" + "ODDOODD" + "DOSNEOO" + "SNEOSNN" + "EOSNEOO" + "SNEOSNN",
+    D: "DOSNEOO" + "SNEOSNN" + "EOSNEOO" + "SNEOSNN" + "EOODDOO" + "ODDOODD" + "DOODDOO" + "ODDOODD"
+  };
+  const ZERO = Date.UTC(2005, 9, 10);
+  const DAY_MS = 86400000;
+  const LABEL = { D: "Day shift", S: "Night shift", N: "Night shift", E: "Finishing nights", O: "Day off" };
+  const TAG = { D: "Day", S: "Night", N: "Night", E: "Ends", O: "Off" };
+  const rotaWorks = c => c === "D" || c === "S" || c === "N";
+  const $ = id => document.getElementById(id);
+
+  // ---------- state ----------
+  let crew = "C";
+  let marks = {};           // "YYYY-MM-DD" -> {al, ot, otHours, note}
+  let store = "local";      // "local" | "cloud"
+  let db = null, uid = null, readOnly = false;
+
+  const lsGet = (k, fb) => { try { const v = localStorage.getItem(k); return v == null ? fb : JSON.parse(v); } catch (e) { return fb; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+  { const c = lsGet("crew2", null); if (c && ROTA[c]) crew = c; }
+  marks = lsGet("marks", {}) || {};
+
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let view = new Date(today.getFullYear(), today.getMonth(), 1);
+
+  // ---------- date helpers ----------
+  const idx = d => {
+    const n = Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - ZERO) / DAY_MS);
+    return n < 0 ? -1 : n % 56;
+  };
+  const code = d => { const i = idx(d); return i < 0 ? "O" : ROTA[crew][i]; };
+  const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+  const fmt = (d, o) => d.toLocaleDateString("en-IE", o);
+  const key = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  const fromKey = k => { const [y, m, dd] = k.split("-").map(Number); return new Date(y, m - 1, dd); };
+  const sameDay = (a, b) => key(a) === key(b);
+  const mark = d => marks[key(d)] || null;
+  const onLeave = d => { const m = mark(d); return !!(m && m.al); };
+  const hasOT = d => { const m = mark(d); return !!(m && m.ot); };
+  // Are you actually going in on this day?
+  const goingIn = d => (rotaWorks(code(d)) && !onLeave(d)) || hasOT(d);
+  const trueOff = d => !goingIn(d) && code(d) !== "E";
+  const hrs = h => (Math.round(h * 10) / 10).toString();
+
+  function relative(n) {
+    if (n === 0) return "today";
+    if (n === 1) return "tomorrow";
+    return "in " + n + " days";
+  }
+
+  // ---------- render: today ----------
+  function renderToday() {
+    const c = code(today), m = mark(today);
+    const main = $("todayMain");
+    let status = LABEL[c], cls = c === "D" ? "is-day" : (c === "S" || c === "N") ? "is-night" : "";
+    if (m && m.al) { status = "Annual leave"; cls = "is-leave"; }
+    else if (m && m.ot && !rotaWorks(c)) { status = "Overtime"; cls = "is-day"; }
+    main.className = "today-main " + cls;
+    $("todayDate").textContent = fmt(today, { weekday: "long", day: "numeric", month: "long" }) + " · " + crew + " shift";
+    $("todayStatus").textContent = status;
+
+    let sub = "";
+    if (goingIn(today)) {
+      let left = 0; while (goingIn(addDays(today, left + 1))) left++;
+      const isDay = c === "D" || !rotaWorks(c);
+      sub = left === 0 ? "Last one of this block" : left + " more after " + (isDay ? "today" : "tonight");
+      if (m && m.ot) sub = hrs(m.otHours || 0) + "h overtime · " + sub;
+    } else {
+      let n = 1; while (!goingIn(addDays(today, n)) && n < 400) n++;
+      const nd = addDays(today, n);
+      sub = "Back " + relative(n) + (rotaWorks(code(nd)) && !onLeave(nd) ? " on " + (code(nd) === "D" ? "days" : "nights") : " for overtime");
+      if (c === "E") sub = "Home after this morning. " + sub;
+    }
+    if (m && m.note) sub += " · " + m.note;
+    $("todaySub").textContent = sub;
+
+    const i = idx(today);
+    $("cycleWeek").textContent = i < 0 ? "–" : Math.floor(i / 7) + 1;
+    $("cycleDay").textContent = i < 0 ? "" : "day " + (i + 1) + "/56";
+
+    const strip = $("strip"); strip.innerHTML = "";
+    for (let k = 0; k < 14; k++) {
+      const d = addDays(today, k), cc = onLeave(d) ? "L" : code(d);
+      const el = document.createElement("div");
+      el.className = "strip-cell" + (k === 0 ? " now" : "");
+      el.title = fmt(d, { weekday: "short", day: "numeric", month: "short" }) + ": " + (cc === "L" ? "Annual leave" : LABEL[cc]) + (hasOT(d) ? " + overtime" : "");
+      el.innerHTML = '<span>' + fmt(d, { weekday: "narrow" }) + '</span><i class="' + cc + (hasOT(d) ? " ot" : "") + '"></i><span>' + d.getDate() + '</span>';
+      strip.appendChild(el);
+    }
+
+    let n = 1; while (!goingIn(addDays(today, n)) && n < 400) n++;
+    const ns = addDays(today, n);
+    const kind = rotaWorks(code(ns)) && !onLeave(ns) ? (code(ns) === "D" ? "Day" : "Night") : "Overtime";
+    $("nextShift").textContent = kind + ", " + fmt(ns, { weekday: "short", day: "numeric", month: "short" }) + " (" + relative(n) + ")";
+    let o = 1; while (!trueOff(addDays(today, o)) && o < 400) o++;
+    const no = addDays(today, o);
+    $("nextOff").textContent = fmt(no, { weekday: "short", day: "numeric", month: "short" }) + " (" + relative(o) + ")" + (onLeave(no) ? " · leave" : "");
+  }
+
+  // ---------- render: month ----------
+  function renderMonth() {
+    $("monthTitle").textContent = fmt(view, { month: "long", year: "numeric" });
+    const grid = $("grid"); grid.innerHTML = "";
+    const monday = new Date(2024, 0, 1);
+    for (let k = 0; k < 7; k++) {
+      const h = document.createElement("div"); h.className = "dow";
+      h.textContent = fmt(addDays(monday, k), { weekday: "short" }).slice(0, 3);
+      grid.appendChild(h);
+    }
+    const lead = (view.getDay() + 6) % 7;
+    for (let k = 0; k < lead; k++) { const b = document.createElement("div"); b.className = "cell blank"; grid.appendChild(b); }
+    const days = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
+    let sD = 0, sN = 0, sO = 0, ot = 0, alm = 0;
+    for (let dnum = 1; dnum <= days; dnum++) {
+      const d = new Date(view.getFullYear(), view.getMonth(), dnum), c = code(d), m = mark(d);
+      const al = !!(m && m.al);
+      if (al && rotaWorks(c)) { alm++; sO++; }
+      else if (c === "D") sD++; else if (c === "S" || c === "N") sN++; else sO++;
+      if (m && m.ot) ot += Number(m.otHours) || 0;
+
+      const el = document.createElement("button");
+      el.type = "button";
+      el.className = "cell " + c + (al ? " L" : "") + (sameDay(d, today) ? " today" : "");
+      let desc = fmt(d, { weekday: "long", day: "numeric", month: "long" }) + ": " + (al ? "Annual leave (rota: " + LABEL[c] + ")" : LABEL[c]);
+      if (m && m.ot) desc += ", overtime " + hrs(m.otHours || 0) + " hours";
+      if (m && m.note) desc += ". Note: " + m.note;
+      el.title = desc; el.setAttribute("aria-label", desc);
+      el.innerHTML = '<span class="n">' + dnum + '</span><span class="tag">' + (al ? "Leave" : TAG[c]) + '</span>'
+        + (m && m.ot ? '<span class="ot-badge">+' + hrs(m.otHours || 0) + '</span>' : '')
+        + (m && m.note ? '<span class="note-dot"></span>' : '');
+      el.addEventListener("click", () => openSheet(d));
+      grid.appendChild(el);
+    }
+    $("statDay").textContent = sD; $("statNight").textContent = sN; $("statOff").textContent = sO;
+    $("statOT").textContent = hrs(ot); $("statALm").textContent = alm;
+
+    let aly = 0;
+    const y = view.getFullYear();
+    Object.keys(marks).forEach(k => {
+      if (!marks[k] || !marks[k].al || !k.startsWith(y + "-")) return;
+      if (rotaWorks(code(fromKey(k)))) aly++;
+    });
+    $("statALy").textContent = aly;
+    $("statALyLabel").textContent = "Leave in " + y;
+  }
+
+  function renderAll() { renderToday(); renderMonth(); }
+
+  // ---------- day editor ----------
+  let editing = null;
+  function openSheet(d) {
+    editing = d;
+    const c = code(d), m = mark(d) || {};
+    $("sheetTitle").textContent = fmt(d, { weekday: "long", day: "numeric", month: "long" });
+    $("sheetRota").textContent = crew + " shift rota: " + LABEL[c];
+    $("sheetSw").className = "sw " + (c === "S" ? "N" : c === "O" ? "" : c);
+    $("optAL").checked = !!m.al;
+    $("optALdesc").textContent = rotaWorks(c) ? "Take this shift as leave." : "You're not rostered this day, so it won't count against your leave.";
+    $("optOT").checked = !!m.ot;
+    $("otHours").value = m.otHours || 12;
+    $("noteIn").value = m.note || "";
+    $("sheetMsg").hidden = true;
+    const ro = readOnly;
+    ["optAL", "optOT", "otHours", "noteIn", "btnSave", "btnClear"].forEach(id => $(id).disabled = ro);
+    if (ro) { $("sheetMsg").textContent = "You can view this calendar but not change it."; $("sheetMsg").hidden = false; }
+    $("scrim").hidden = false; $("sheet").hidden = false;
+    setTimeout(() => $("optAL").focus(), 0);
+  }
+  function closeSheet() { $("scrim").hidden = true; $("sheet").hidden = true; editing = null; }
+
+  async function saveDay(k, value) {
+    const prev = marks[k];
+    if (value) marks[k] = value; else delete marks[k];
+    renderAll();
+    if (store === "cloud" && db && uid) {
+      try {
+        const ref = db.collection("data/users/" + uid).doc("m" + k);
+        if (value) await ref.set(Object.assign({ date: k }, value)); else await ref.delete();
+        setSync("ok", "Saved to your account");
+      } catch (e) {
+        if (prev) marks[k] = prev; else delete marks[k];
+        renderAll();
+        setSync("err", e && e.code === "invalid_argument" ? "You don't have permission to change this calendar" : "Couldn't save. Check your connection and try again.");
+      }
+    } else {
+      lsSet("marks", marks);
+    }
+  }
+
+  $("btnSave").addEventListener("click", () => {
+    if (!editing) return;
+    const al = $("optAL").checked, ot = $("optOT").checked;
+    const h = parseFloat($("otHours").value);
+    if (ot && !(h > 0 && h <= 24)) { $("sheetMsg").textContent = "Enter overtime hours between 0.5 and 24."; $("sheetMsg").hidden = false; return; }
+    const note = $("noteIn").value.trim();
+    const k = key(editing);
+    const value = (al || ot || note) ? { al, ot, otHours: ot ? h : 0, note } : null;
+    closeSheet();
+    saveDay(k, value);
+  });
+  $("btnClear").addEventListener("click", () => { if (!editing) return; const k = key(editing); closeSheet(); saveDay(k, null); });
+  $("btnCancel").addEventListener("click", closeSheet);
+  $("scrim").addEventListener("click", closeSheet);
+  $("optOT").addEventListener("change", () => { if ($("optOT").checked && !$("otHours").value) $("otHours").value = 12; });
+  $("otHours").addEventListener("input", () => { if ($("otHours").value) $("optOT").checked = true; });
+  document.querySelectorAll(".quick button").forEach(b => b.addEventListener("click", () => { $("otHours").value = b.dataset.h; $("optOT").checked = true; }));
+
+  // ---------- crew & navigation ----------
+  function setCrew(c, persist) {
+    crew = c;
+    document.querySelectorAll("#crewPicker button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.crew === c)));
+    renderAll();
+    if (!persist) return;
+    lsSet("crew2", c);
+    if (store === "cloud" && db && uid && !readOnly) {
+      db.collection("data/users/" + uid).doc("settings").set({ crew: c }).catch(() => {});
+    }
+  }
+  function shiftMonth(n) { view = new Date(view.getFullYear(), view.getMonth() + n, 1); renderMonth(); }
+
+  document.querySelectorAll("#crewPicker button").forEach(b => b.addEventListener("click", () => setCrew(b.dataset.crew, true)));
+  $("btnPrev").addEventListener("click", () => shiftMonth(-1));
+  $("btnNext").addEventListener("click", () => shiftMonth(1));
+  $("btnToday").addEventListener("click", () => { view = new Date(today.getFullYear(), today.getMonth(), 1); renderMonth(); });
+  document.addEventListener("keydown", e => {
+    if (!$("sheet").hidden) { if (e.key === "Escape") closeSheet(); return; }
+    if (e.target.closest && e.target.closest("input")) return;
+    if (e.key === "ArrowLeft") shiftMonth(-1);
+    if (e.key === "ArrowRight") shiftMonth(1);
+  });
+
+  let x0 = null, y0 = null;
+  const g = $("grid");
+  g.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+  g.addEventListener("touchend", e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) { e.preventDefault(); shiftMonth(dx < 0 ? 1 : -1); }
+    x0 = null;
+  });
+
+  function setSync(state, text) { $("sync").className = "sync " + (state || ""); $("syncText").textContent = text; }
+
+  setCrew(crew, false);
+  setSync("", "Saved on this device");
+
+  // ---------- account storage (syncs across your devices) ----------
+  (async () => {
+    if (!window.claude || !window.claude.use) return;
+    try {
+      const [dbNs, userNs] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
+      if (!dbNs || !userNs) return;
+      const id = await userNs.id();
+      if (!id) return;
+      try { if (userNs.can && (await userNs.can("data.write")) === false) readOnly = true; } catch (e) {}
+      db = dbNs; uid = id;
+      const col = db.collection("data/users/" + uid);
+      let first = true;
+      col.onSnapshot(snap => {
+        const next = {}; let savedCrew = null;
+        snap.docs.forEach(doc => {
+          const v = doc.data(); if (!v) return;
+          if (doc.id === "settings") { savedCrew = v.crew; return; }
+          if (v.date) next[v.date] = { al: !!v.al, ot: !!v.ot, otHours: Number(v.otHours) || 0, note: v.note || "" };
+        });
+        if (first) {
+          first = false;
+          store = "cloud";
+          // Move anything saved only on this device into the account once.
+          const local = lsGet("marks", {}) || {};
+          const toMove = Object.keys(local).filter(k => !next[k]);
+          if (toMove.length && !readOnly) {
+            (async () => {
+              for (const k of toMove) {
+                try { await col.doc("m" + k).set(Object.assign({ date: k }, local[k])); } catch (e) {}
+              }
+              lsSet("marks", {});
+            })();
+            toMove.forEach(k => next[k] = local[k]);
+          }
+          if (!savedCrew && !readOnly) col.doc("settings").set({ crew }).catch(() => {});
+        }
+        marks = next;
+        if (savedCrew && ROTA[savedCrew] && savedCrew !== crew) { crew = savedCrew; lsSet("crew2", crew); setCrew(crew, false); }
+        else renderAll();
+        setSync("ok", readOnly ? "View only" : "Synced to your account · works on any device");
+      }, () => {
+        store = "local";
+        setSync("err", "Couldn't reach your account. Changes are saved on this device only.");
+      });
+    } catch (e) { /* stay on device storage */ }
+  })();
+})();
+</script>
+</body></html>
