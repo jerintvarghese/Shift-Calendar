@@ -1,0 +1,1008 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="author" content="Jerin T Varghese"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Shifts"><meta name="theme-color" content="#2C336E"><link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"></head><body>
+<title>Vistakon Crew Calendar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #ECEFF2;
+    --surface: #FFFFFF;
+    --surface-2: #F5F7F9;
+    --ink: #181C24;
+    --muted: #5B6472;
+    --line: #D3D8DE;
+    --day: #F2B233;
+    --day-ink: #3A2800;
+    --night: #2C336E;
+    --night-ink: #FFFFFF;
+    --leave: #1E8A6E;
+    --leave-ink: #FFFFFF;
+    --ot: #D2492A;
+    --ot-ink: #FFFFFF;
+    --sel: #1668E3;
+    --sel-ink: #FFFFFF;
+    --today-ring: #181C24;
+    --focus: #1668E3;
+    --scrim: rgba(16, 18, 23, .45);
+    --display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+    --body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #101217;
+      --surface: #181B22;
+      --surface-2: #1F232B;
+      --ink: #E7EAEF;
+      --muted: #98A0AD;
+      --line: #2C313B;
+      --day: #E3A62B;
+      --day-ink: #2A1C00;
+      --night: #5B64CC;
+      --night-ink: #FFFFFF;
+      --leave: #2FA886;
+      --leave-ink: #06221A;
+      --ot: #F0673F;
+      --ot-ink: #230A03;
+      --sel: #5B9BFF;
+      --sel-ink: #06142B;
+      --today-ring: #E7EAEF;
+      --focus: #5B9BFF;
+      --scrim: rgba(0, 0, 0, .6);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #101217;
+    --surface: #181B22;
+    --surface-2: #1F232B;
+    --ink: #E7EAEF;
+    --muted: #98A0AD;
+    --line: #2C313B;
+    --day: #E3A62B;
+    --day-ink: #2A1C00;
+    --night: #5B64CC;
+    --night-ink: #FFFFFF;
+    --leave: #2FA886;
+    --leave-ink: #06221A;
+    --ot: #F0673F;
+    --ot-ink: #230A03;
+    --sel: #5B9BFF;
+    --sel-ink: #06142B;
+    --today-ring: #E7EAEF;
+    --focus: #5B9BFF;
+    --scrim: rgba(0, 0, 0, .6);
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.45;
+    padding-inline: 16px;
+    padding-block: 16px 40px;
+  }
+  body.selecting { padding-bottom: 170px; }
+  .wrap { max-width: 560px; margin: 0 auto; display: grid; gap: 16px; }
+
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  button:disabled { cursor: default; opacity: .45; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+  .k { font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  .h2 { margin: 0; font-family: var(--display); font-weight: 700; font-size: 23px; letter-spacing: .02em; text-transform: uppercase; line-height: 1; }
+  .link-btn { background: none; border: 0; padding: 0; font-weight: 600; text-align: left; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
+  .link-btn:hover { text-decoration-color: currentColor; }
+  .btn { height: 40px; border-radius: 10px; padding: 0 14px; font-weight: 600; border: 1px solid var(--line); background: var(--surface-2); white-space: nowrap; }
+  .btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .btn.leave { background: var(--leave); color: var(--leave-ink); border-color: var(--leave); }
+  .btn.ot { background: var(--ot); color: var(--ot-ink); border-color: var(--ot); }
+  .btn.ghost { background: transparent; border-color: transparent; }
+  .chip-btn { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; height: 32px; padding: 0 12px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+
+  /* Header */
+  header.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .brand { font-family: var(--display); font-weight: 700; font-size: 22px; letter-spacing: .06em; text-transform: uppercase; line-height: 1; }
+  .brand small { display: block; font-family: var(--mono); font-weight: 400; font-size: 11px; letter-spacing: .04em; text-transform: none; color: var(--muted); margin-top: 4px; }
+  .seg { display: inline-flex; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; }
+  .seg button {
+    border: 0; background: transparent; border-radius: 7px;
+    font-family: var(--display); font-weight: 700; font-size: 17px; letter-spacing: .04em;
+    width: 40px; height: 34px; color: var(--muted);
+  }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+
+  /* Today panel */
+  .today { overflow: hidden; display: grid; }
+  .today-main { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: end; padding: 18px 18px 16px; cursor: pointer; border: 0; width: 100%; text-align: left; background: var(--surface-2); }
+  .today-main.is-day { background: var(--day); color: var(--day-ink); }
+  .today-main.is-night { background: var(--night); color: var(--night-ink); }
+  .today-main.is-leave { background: var(--leave); color: var(--leave-ink); }
+  .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .03em; opacity: .8; }
+  .today-status { font-family: var(--display); font-weight: 700; font-size: 44px; line-height: .95; text-transform: uppercase; letter-spacing: .01em; margin-top: 6px; text-wrap: balance; }
+  .today-sub { font-size: 14px; margin-top: 6px; opacity: .85; }
+  .cycle { text-align: right; font-family: var(--mono); font-size: 12px; opacity: .8; line-height: 1.3; }
+  .cycle b { display: block; font-family: var(--display); font-size: 28px; font-weight: 600; opacity: 1; line-height: 1; }
+
+  .strip { display: grid; grid-template-columns: repeat(14, 1fr); gap: 3px; padding: 12px 18px 14px; }
+  .strip-cell { display: grid; gap: 4px; justify-items: center; position: relative; border: 0; background: none; padding: 0; min-width: 0; }
+  .strip-cell span { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+  .strip-cell i { display: block; width: 100%; height: 22px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--line); position: relative; }
+  .strip-cell i.D { background: var(--day); border-color: var(--day); }
+  .strip-cell i.S, .strip-cell i.N { background: var(--night); border-color: var(--night); }
+  .strip-cell i.E { background: linear-gradient(var(--night) 0 30%, var(--surface-2) 30%); }
+  .strip-cell i.L { background: var(--leave); border-color: var(--leave); }
+  .strip-cell i.ot::after { content: ""; position: absolute; right: -2px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--ot); border: 1.5px solid var(--surface); }
+  .strip-cell i.sel { outline: 2px solid var(--sel); outline-offset: 1px; }
+  .strip-cell.now span { color: var(--ink); font-weight: 500; }
+  .strip-cell.now i { outline: 2px solid var(--today-ring); outline-offset: 1px; }
+  .next-row { display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 0 18px 16px; font-size: 14px; }
+  .next-row > div { display: grid; }
+
+  /* Check dates */
+  .check { padding: 14px; display: grid; gap: 12px; }
+  .check-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .check-inputs label { display: grid; gap: 4px; min-width: 0; }
+  .check-inputs input { height: 42px; border: 1px solid var(--line); border-radius: 8px; padding: 0 10px; background: var(--surface-2); width: 100%; min-width: 0; }
+  .quick-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .result { display: grid; gap: 10px; }
+  .result-line { display: flex; gap: 12px; align-items: flex-start; }
+  .pill { display: inline-flex; align-items: center; height: 30px; padding: 0 12px; border-radius: 999px; font-family: var(--display); font-weight: 700; font-size: 16px; letter-spacing: .03em; text-transform: uppercase; white-space: nowrap; background: var(--surface-2); border: 1px solid var(--line); }
+  .pill.D { background: var(--day); color: var(--day-ink); border-color: var(--day); }
+  .pill.N { background: var(--night); color: var(--night-ink); border-color: var(--night); }
+  .pill.L { background: var(--leave); color: var(--leave-ink); border-color: var(--leave); }
+  .result-line div { display: grid; gap: 2px; font-size: 14px; }
+  .result-line b { font-size: 16px; }
+  .muted { color: var(--muted); }
+  .counts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .counts div { display: grid; gap: 2px; }
+  .counts b { font-family: var(--display); font-size: 24px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .counts span { font-size: 12px; color: var(--muted); }
+  .need { font-size: 14px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  .need b { font-variant-numeric: tabular-nums; }
+  .mini { display: grid; grid-template-columns: repeat(auto-fill, minmax(22px, 1fr)); gap: 3px; }
+  .mini button { height: 26px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface-2); padding: 0; font-family: var(--mono); font-size: 9.5px; color: var(--muted); position: relative; }
+  .mini button.D { background: var(--day); border-color: var(--day); color: var(--day-ink); }
+  .mini button.S, .mini button.N { background: var(--night); border-color: var(--night); color: var(--night-ink); }
+  .mini button.E { background: linear-gradient(var(--night) 0 28%, var(--surface-2) 28%); }
+  .mini button.L { background: var(--leave); border-color: var(--leave); color: var(--leave-ink); }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .warn { color: var(--ot); font-size: 14px; }
+
+  /* Month */
+  .month { padding: 14px 14px 16px; display: grid; gap: 12px; }
+  .month-head { display: flex; align-items: center; gap: 8px; }
+  .month-head .h2 { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .title-btn { flex: 1; display: flex; align-items: center; gap: 6px; background: none; border: 0; padding: 4px 0; text-align: left; min-width: 0; }
+  .title-btn .caret { font-size: 14px; color: var(--muted); transition: transform .15s ease; }
+  .title-btn[aria-expanded="true"] .caret { transform: rotate(180deg); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .picker { display: grid; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); }
+  .picker-year { display: flex; align-items: center; gap: 8px; }
+  .picker-year select { flex: 1; height: 40px; border: 1px solid var(--line); border-radius: 8px; padding: 0 10px; background: var(--surface); color: var(--ink); font-family: var(--display); font-weight: 700; font-size: 20px; letter-spacing: .03em; text-align: center; }
+  .picker-months { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .picker-months button { height: 52px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; gap: 0; padding: 4px 2px; line-height: 1.1; }
+  .picker-months button b { font-family: var(--display); font-size: 17px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
+  .picker-months button span { font-family: var(--mono); font-size: 9.5px; color: var(--muted); }
+  .picker-months button.cur { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .picker-months button.cur span { color: inherit; opacity: .75; }
+  .picker-months button.now { outline: 2px solid var(--sel); outline-offset: -2px; }
+  .icon-btn { border: 1px solid var(--line); background: var(--surface-2); border-radius: 8px; height: 34px; min-width: 34px; padding: 0 10px; font-size: 14px; font-weight: 600; }
+  .hint-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-top: -4px; }
+  .hint { font-size: 13px; color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; touch-action: pan-y; }
+  .dow { font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: center; padding-bottom: 2px; text-transform: uppercase; }
+  .cell {
+    position: relative; aspect-ratio: 1 / 1.05; max-width: 100%; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--surface-2);
+    display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; padding: 5px 6px;
+    font-variant-numeric: tabular-nums; overflow: hidden; text-align: left; width: 100%;
+    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; touch-action: pan-y;
+    transition: opacity .15s ease;
+  }
+  button.cell:hover { filter: brightness(.96); }
+  .cell .n { font-family: var(--display); font-weight: 600; font-size: 19px; line-height: 1; position: relative; }
+  .cell .tag { font-family: var(--mono); font-size: 9.5px; letter-spacing: .04em; text-transform: uppercase; line-height: 1; position: relative; }
+  .cell.blank { background: transparent; border-color: transparent; }
+  .cell.D { background: var(--day); border-color: var(--day); color: var(--day-ink); }
+  .cell.S, .cell.N { background: var(--night); border-color: var(--night); color: var(--night-ink); }
+  .cell.E::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 26%; background: var(--night); }
+  .cell.E .n { margin-top: 22%; }
+  .cell.E .tag, .cell.O .tag { color: var(--muted); }
+  .cell.L {
+    background: repeating-linear-gradient(135deg, var(--leave) 0 6px, color-mix(in srgb, var(--leave) 82%, var(--surface)) 6px 12px);
+    border-color: var(--leave); color: var(--leave-ink);
+  }
+  .cell.L .n, .cell.L .tag { color: var(--leave-ink); }
+  .cell.L.E::before { display: none; }
+  .cell.L.E .n { margin-top: 0; }
+  .ot-badge {
+    position: absolute; top: 4px; right: 4px; background: var(--ot); color: var(--ot-ink);
+    font-family: var(--mono); font-size: 9px; font-weight: 500; line-height: 1; padding: 3px 4px; border-radius: 4px;
+  }
+  .note-dot { position: absolute; bottom: 5px; right: 5px; width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: .7; }
+  .cell.today { outline: 2.5px solid var(--today-ring); outline-offset: 1.5px; }
+  .cell.sel { box-shadow: inset 0 0 0 3px var(--sel); }
+  .cell.sel::after {
+    content: "✓"; position: absolute; inset: 0; display: grid; place-items: center;
+    background: color-mix(in srgb, var(--sel) 38%, transparent); color: var(--sel-ink);
+    font-size: 22px; font-weight: 700;
+  }
+  .grid[data-f="day"] .cell:not(.blank):not(.m-day),
+  .grid[data-f="night"] .cell:not(.blank):not(.m-night),
+  .grid[data-f="off"] .cell:not(.blank):not(.m-off),
+  .grid[data-f="ot"] .cell:not(.blank):not(.m-ot),
+  .grid[data-f="leave"] .cell:not(.blank):not(.m-leave) { opacity: .2; }
+  .cell.flash { animation: flash 1.2s ease-out 2; }
+  @keyframes flash { 0% { box-shadow: 0 0 0 0 var(--sel); } 60% { box-shadow: 0 0 0 7px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
+  .stat { display: grid; gap: 2px; align-content: start; text-align: left; border: 1px solid transparent; background: none; border-radius: 10px; padding: 6px 8px; margin: -2px; }
+  .stat:hover { background: var(--surface-2); }
+  .stat[aria-pressed="true"] { background: var(--surface-2); border-color: var(--ink); }
+  .stat b { font-family: var(--display); font-weight: 700; font-size: 26px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat span { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: none; border: 1px solid var(--line); background: var(--surface-2); }
+  .sw.D { background: var(--day); border-color: var(--day); }
+  .sw.N { background: var(--night); border-color: var(--night); }
+  .sw.E { background: linear-gradient(var(--night) 0 35%, var(--surface-2) 35%); }
+  .sw.L { background: var(--leave); border-color: var(--leave); }
+  .sw.OT { background: var(--ot); border-color: var(--ot); border-radius: 50%; }
+  .filter-note { font-size: 13px; color: var(--muted); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 13px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+  .sync { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .sync i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); display: inline-block; }
+  .sync.ok i { background: var(--leave); }
+  .sync.err i { background: var(--ot); }
+
+  footer { font-size: 12.5px; color: var(--muted); line-height: 1.5; max-width: 60ch; display: grid; gap: 12px; }
+  .credit { border-top: 1px solid var(--line); padding-top: 12px; }
+  .credit strong { color: var(--ink); font-weight: 600; }
+
+  /* Selection bar */
+  .selbar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 8;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    background: var(--surface); border-top: 2px solid var(--sel);
+    box-shadow: 0 -6px 24px rgba(0,0,0,.12);
+  }
+  .selbar-in { max-width: 560px; margin: 0 auto; display: grid; gap: 10px; }
+  .selbar-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .selbar-top b { font-family: var(--display); font-size: 21px; text-transform: uppercase; letter-spacing: .02em; line-height: 1; }
+  .selbar-top .muted { font-size: 13px; display: block; margin-top: 3px; }
+  .ot-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .ot-row input { width: 76px; height: 40px; border: 1px solid var(--line); border-radius: 8px; padding: 0 10px; background: var(--surface-2); font-variant-numeric: tabular-nums; }
+
+  /* Toast */
+  .toast {
+    position: fixed; left: 50%; transform: translateX(-50%); z-index: 12;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    background: var(--ink); color: var(--bg); border-radius: 12px; padding: 10px 10px 10px 16px;
+    display: flex; align-items: center; gap: 14px; width: max-content; max-width: calc(100% - 32px);
+    font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  }
+  body.selecting .toast { bottom: calc(170px + env(safe-area-inset-bottom, 0px)); }
+  .toast button { background: transparent; border: 1px solid color-mix(in srgb, var(--bg) 40%, transparent); color: var(--bg); border-radius: 8px; height: 32px; padding: 0 12px; font-weight: 600; }
+
+  /* Day editor sheet */
+  .scrim { position: fixed; inset: 0; background: var(--scrim); z-index: 10; }
+  .sheet {
+    position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); z-index: 11;
+    width: min(560px, 100%); background: var(--surface); color: var(--ink);
+    border-radius: 16px 16px 0 0; border: 1px solid var(--line); border-bottom: 0;
+    padding: 18px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+    display: grid; gap: 14px; max-height: 90%; overflow-y: auto;
+  }
+  .sheet h2 { margin: 0; font-family: var(--display); font-weight: 700; font-size: 26px; text-transform: uppercase; line-height: 1; }
+  .sheet .rota-line { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); margin-top: 6px; }
+  .opt { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: center; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); }
+  .opt input[type="checkbox"] { width: 22px; height: 22px; margin: 0; accent-color: var(--leave); }
+  .opt.ot input[type="checkbox"] { accent-color: var(--ot); }
+  .opt label { font-weight: 600; font-size: 16px; }
+  .opt .desc { grid-column: 2; font-size: 13px; color: var(--muted); }
+  .opt .extra { grid-column: 2; display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+  .opt .extra input { width: 80px; height: 36px; border: 1px solid var(--line); border-radius: 8px; padding: 0 10px; background: var(--surface); font-variant-numeric: tabular-nums; }
+  .field { display: grid; gap: 6px; }
+  .field input { height: 40px; border: 1px solid var(--line); border-radius: 8px; padding: 0 12px; background: var(--surface-2); width: 100%; }
+  .sheet-actions { display: flex; gap: 8px; justify-content: space-between; flex-wrap: wrap; }
+  .sheet-actions div { display: flex; gap: 8px; }
+  .btn.danger { background: transparent; color: var(--ot); border-color: transparent; padding: 0 6px; }
+  .sheet .msg { font-size: 13px; color: var(--ot); }
+
+  @media (max-width: 380px) {
+    .today-status { font-size: 36px; }
+    .cell .tag { display: none; }
+    .strip { gap: 2px; padding-inline: 12px; }
+    .counts { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .sheet { animation: rise .18s ease-out; }
+    @keyframes rise { from { transform: translate(-50%, 16px); opacity: .6; } to { transform: translate(-50%, 0); opacity: 1; } }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cell.flash { animation: none; outline: 3px solid var(--sel); }
+    .cell { transition: none; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">Shift Calendar<small>4 crews · 8-week rotation</small></div>
+    <div class="seg" role="group" aria-label="Choose your shift" id="crewPicker">
+      <button type="button" id="crew-A" data-crew="A" aria-pressed="false">A</button>
+      <button type="button" id="crew-B" data-crew="B" aria-pressed="false">B</button>
+      <button type="button" id="crew-C" data-crew="C" aria-pressed="true">C</button>
+      <button type="button" id="crew-D" data-crew="D" aria-pressed="false">D</button>
+    </div>
+  </header>
+
+  <section class="card today" aria-live="polite">
+    <button type="button" class="today-main" id="todayMain" aria-label="Edit today">
+      <div>
+        <div class="eyebrow" id="todayDate">Today</div>
+        <div class="today-status" id="todayStatus">—</div>
+        <div class="today-sub" id="todaySub"></div>
+      </div>
+      <div class="cycle"><b id="cycleWeek">–</b>week of 8<br><span id="cycleDay"></span></div>
+    </button>
+    <div class="strip" id="strip" aria-label="Next 14 days"></div>
+    <div class="next-row">
+      <div><span class="k">Next shift</span><button type="button" class="link-btn" id="nextShift">—</button></div>
+      <div><span class="k">Next day off</span><button type="button" class="link-btn" id="nextOff">—</button></div>
+    </div>
+  </section>
+
+
+  <section class="card month" id="monthCard">
+    <div class="month-head">
+      <button type="button" class="title-btn" id="monthTitleBtn" aria-expanded="false" aria-controls="picker"><h2 class="h2" id="monthTitle">—</h2><span class="caret" aria-hidden="true">▾</span></button>
+      <button type="button" class="icon-btn" id="btnToday">Today</button>
+      <button type="button" class="icon-btn" id="btnPrev" aria-label="Previous month">‹</button>
+      <button type="button" class="icon-btn" id="btnNext" aria-label="Next month">›</button>
+    </div>
+    <div class="picker" id="picker" hidden>
+      <div class="picker-year">
+        <button type="button" class="icon-btn" id="pyPrev" aria-label="Previous year">‹</button>
+        <label class="sr" for="pyYear">Year</label>
+        <select id="pyYear"></select>
+        <button type="button" class="icon-btn" id="pyNext" aria-label="Next year">›</button>
+      </div>
+      <div class="picker-months" id="pyMonths"></div>
+    </div>
+    <div class="hint-row">
+      <span class="hint" id="hint">Tap a day to edit. Press and hold to select several.</span>
+      <button type="button" class="chip-btn" id="btnSelect">Select days</button>
+    </div>
+    <div class="grid" id="grid"></div>
+    <div class="stats">
+      <button type="button" class="stat" data-f="day" aria-pressed="false"><b id="statDay">0</b><span><i class="sw D"></i>Day shifts</span></button>
+      <button type="button" class="stat" data-f="night" aria-pressed="false"><b id="statNight">0</b><span><i class="sw N"></i>Night shifts</span></button>
+      <button type="button" class="stat" data-f="off" aria-pressed="false"><b id="statOff">0</b><span><i class="sw"></i>Days off</span></button>
+      <button type="button" class="stat" data-f="ot" aria-pressed="false"><b id="statOT">0</b><span><i class="sw OT"></i>Overtime hrs</span></button>
+      <button type="button" class="stat" data-f="leave" aria-pressed="false"><b id="statALm">0</b><span><i class="sw L"></i>Leave this month</span></button>
+      <div class="stat"><b id="statALy">0</b><span><i class="sw L"></i><span id="statALyLabel">Leave this year</span></span></div>
+    </div>
+    <div class="filter-note" id="filterNote">Tap a total to highlight those days.</div>
+    <div class="legend">
+      <span><i class="sw D"></i>Day</span>
+      <span><i class="sw N"></i>Night (you go in that evening)</span>
+      <span><i class="sw E"></i>Finish nights in the morning</span>
+      <span><i class="sw"></i>Off</span>
+      <span><i class="sw L"></i>Annual leave</span>
+      <span><i class="sw OT"></i>Overtime</span>
+    </div>
+    <div class="sync" id="sync"><i></i><span id="syncText">Saved on this device</span></div>
+  </section>
+
+  <footer>
+    <div>Rota follows the Vistakon 8-week pattern, counted from Monday 10 October 2005. Leave counts only days you would have worked. Your leave and overtime marks are saved on this phone or computer only. Check against your official rota if anything changes on site.</div>
+    <div class="credit">Designed and built by <strong>Jerin T Varghese</strong></div>
+  </footer>
+</div>
+
+<!-- Multi-select bar -->
+<div class="selbar" id="selbar" hidden>
+  <div class="selbar-in">
+    <div class="selbar-top">
+      <div><b id="selCount">0 days selected</b><span class="muted" id="selSummary"></span></div>
+      <button type="button" class="btn" id="selDone">Done</button>
+    </div>
+    <div class="actions" id="selActions">
+      <button type="button" class="btn leave" id="selLeave">Annual leave</button>
+      <button type="button" class="btn ot" id="selOT">Overtime</button>
+      <button type="button" class="btn" id="selClear">Clear marks</button>
+      <button type="button" class="btn ghost" id="selMonth">Whole month</button>
+    </div>
+    <div class="ot-row" id="selOTRow" hidden>
+      <input type="number" id="selOTHours" min="0.5" max="24" step="0.5" value="12" inputmode="decimal" aria-label="Overtime hours per day">
+      <span class="k">hours each</span>
+      <button type="button" class="chip-btn" data-h="4">4</button>
+      <button type="button" class="chip-btn" data-h="8">8</button>
+      <button type="button" class="chip-btn" data-h="12">12</button>
+      <button type="button" class="btn ot" id="selOTApply">Add</button>
+      <button type="button" class="btn ghost" id="selOTBack">Back</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" hidden><span id="toastText"></span><button type="button" id="toastUndo">Undo</button></div>
+
+<div class="scrim" id="scrim" hidden></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <div>
+    <h2 id="sheetTitle">—</h2>
+    <div class="rota-line"><i class="sw" id="sheetSw"></i><span id="sheetRota">—</span></div>
+  </div>
+  <div class="opt">
+    <input type="checkbox" id="optAL">
+    <label for="optAL">Annual leave</label>
+    <div class="desc" id="optALdesc">Take this day as leave.</div>
+  </div>
+  <div class="opt ot">
+    <input type="checkbox" id="optOT">
+    <label for="optOT">Overtime</label>
+    <div class="desc">Extra hours worked on this day.</div>
+    <div class="extra">
+      <input type="number" id="otHours" min="0.5" max="24" step="0.5" inputmode="decimal" aria-label="Overtime hours" value="12">
+      <span class="k">hours</span>
+      <button type="button" class="chip-btn" data-h="4">4</button>
+      <button type="button" class="chip-btn" data-h="8">8</button>
+      <button type="button" class="chip-btn" data-h="12">12</button>
+    </div>
+  </div>
+  <div class="field">
+    <label class="k" for="noteIn">Note</label>
+    <input type="text" id="noteIn" maxlength="120" placeholder="e.g. covering for B shift, approved by supervisor">
+  </div>
+  <div class="msg" id="sheetMsg" hidden></div>
+  <div class="sheet-actions">
+    <button type="button" class="btn danger" id="btnClear">Clear day</button>
+    <div>
+      <button type="button" class="btn" id="btnCancel">Cancel</button>
+      <button type="button" class="btn primary" id="btnSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/*
+  Shift Calendar by Jerin T Varghese.
+  The ROTA pattern below is adapted from viscalendar (https://github.com/phryniszak/viscalendar):
+  MIT License, Copyright (c) 2020 phryniszak.
+  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+  associated documentation files (the "Software"), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge, publish, distribute,
+  sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions: The above copyright notice and this
+  permission notice shall be included in all copies or substantial portions of the Software.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+  NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+  OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+(() => {
+  // D = day, S = first night of a block, N = night, E = finishing nights (morning), O = off
+  const ROTA = {
+    A: "ODDOODD" + "DOODDOO" + "ODDOODD" + "DOODDOO" + "SNEOSNN" + "EOSNEOO" + "SNEOSNN" + "EOSNEOO",
+    B: "SNEOSNN" + "EOSNEOO" + "SNEOSNN" + "EOSNEOO" + "ODDOODD" + "DOODDOO" + "ODDOODD" + "DOODDOO",
+    C: "EOODDOO" + "ODDOODD" + "DOODDOO" + "ODDOODD" + "DOSNEOO" + "SNEOSNN" + "EOSNEOO" + "SNEOSNN",
+    D: "DOSNEOO" + "SNEOSNN" + "EOSNEOO" + "SNEOSNN" + "EOODDOO" + "ODDOODD" + "DOODDOO" + "ODDOODD"
+  };
+  const ZERO = Date.UTC(2005, 9, 10);
+  const DAY_MS = 86400000;
+  const LABEL = { D: "Day shift", S: "Night shift", N: "Night shift", E: "Finishing nights", O: "Day off" };
+  const TAG = { D: "Day", S: "Night", N: "Night", E: "Ends", O: "Off" };
+  const rotaWorks = c => c === "D" || c === "S" || c === "N";
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+
+  // ---------- state ----------
+  let crew = "C";
+  let marks = {};           // "YYYY-MM-DD" -> {al, ot, otHours, note}
+  let store = "local";      // "local" | "cloud"
+  let db = null, uid = null, readOnly = false;
+  let selecting = false;
+  const sel = new Set();
+  let filter = null;
+
+  const lsGet = (k, fb) => { try { const v = localStorage.getItem(k); return v == null ? fb : JSON.parse(v); } catch (e) { return fb; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+  { const c = lsGet("crew2", null); if (c && ROTA[c]) crew = c; }
+  marks = lsGet("marks", {}) || {};
+
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let view = new Date(today.getFullYear(), today.getMonth(), 1);
+
+  // ---------- date helpers ----------
+  const dayNum = d => Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - ZERO) / DAY_MS);
+  const idx = d => { const n = dayNum(d); return n < 0 ? -1 : n % 56; };
+  const code = d => { const i = idx(d); return i < 0 ? "O" : ROTA[crew][i]; };
+  const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+  const between = (a, b) => dayNum(b) - dayNum(a);
+  const fmt = (d, o) => d.toLocaleDateString("en-IE", o);
+  const fmtShort = d => fmt(d, { weekday: "short", day: "numeric", month: "short" });
+  const fmtLong = d => fmt(d, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const key = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  const fromKey = k => { const [y, m, dd] = k.split("-").map(Number); return new Date(y, m - 1, dd); };
+  const sameDay = (a, b) => key(a) === key(b);
+  const mark = d => marks[key(d)] || null;
+  const onLeave = d => { const m = mark(d); return !!(m && m.al); };
+  const hasOT = d => { const m = mark(d); return !!(m && m.ot); };
+  const goingIn = d => (rotaWorks(code(d)) && !onLeave(d)) || hasOT(d);
+  const trueOff = d => !goingIn(d) && code(d) !== "E";
+  const hrs = h => (Math.round(h * 10) / 10).toString();
+  const plural = (n, one, many) => n + " " + (n === 1 ? one : (many || one + "s"));
+
+  function relative(n) {
+    if (n === 0) return "today";
+    if (n === 1) return "tomorrow";
+    if (n === -1) return "yesterday";
+    return n > 0 ? "in " + n + " days" : Math.abs(n) + " days ago";
+  }
+  // category used by the monthly totals and highlight filter
+  function kind(d) {
+    const c = code(d);
+    if (onLeave(d) && rotaWorks(c)) return "off";
+    if (c === "D") return "day";
+    if (c === "S" || c === "N") return "night";
+    return "off";
+  }
+
+  // ---------- render: today ----------
+  function renderToday() {
+    const c = code(today), m = mark(today);
+    const main = $("todayMain");
+    let status = LABEL[c], cls = c === "D" ? "is-day" : (c === "S" || c === "N") ? "is-night" : "";
+    if (m && m.al) { status = "Annual leave"; cls = "is-leave"; }
+    else if (m && m.ot && !rotaWorks(c)) { status = "Overtime"; cls = "is-day"; }
+    main.className = "today-main " + cls;
+    $("todayDate").textContent = fmt(today, { weekday: "long", day: "numeric", month: "long" }) + " · " + crew + " shift";
+    $("todayStatus").textContent = status;
+
+    let sub = "";
+    if (goingIn(today)) {
+      let left = 0; while (goingIn(addDays(today, left + 1)) && left < 60) left++;
+      const isDay = c === "D" || !rotaWorks(c);
+      sub = left === 0 ? "Last one of this block" : left + " more after " + (isDay ? "today" : "tonight");
+      if (m && m.ot) sub = hrs(m.otHours || 0) + "h overtime · " + sub;
+    } else {
+      let n = 1; while (!goingIn(addDays(today, n)) && n < 400) n++;
+      const nd = addDays(today, n);
+      sub = "Back " + relative(n) + (rotaWorks(code(nd)) && !onLeave(nd) ? " on " + (code(nd) === "D" ? "days" : "nights") : " for overtime");
+      if (c === "E") sub = "Home after this morning. " + sub;
+    }
+    if (m && m.note) sub += " · " + m.note;
+    $("todaySub").textContent = sub;
+
+    const i = idx(today);
+    $("cycleWeek").textContent = i < 0 ? "–" : Math.floor(i / 7) + 1;
+    $("cycleDay").textContent = i < 0 ? "" : "day " + (i + 1) + "/56";
+
+    const strip = $("strip"); strip.innerHTML = "";
+    for (let k = 0; k < 14; k++) {
+      const d = addDays(today, k), cc = onLeave(d) ? "L" : code(d);
+      const el = document.createElement("button");
+      el.type = "button";
+      el.className = "strip-cell" + (k === 0 ? " now" : "");
+      el.dataset.key = key(d);
+      const desc = fmtShort(d) + ": " + (cc === "L" ? "Annual leave" : LABEL[cc]) + (hasOT(d) ? " + overtime" : "");
+      el.title = desc; el.setAttribute("aria-label", desc);
+      el.innerHTML = '<span>' + fmt(d, { weekday: "narrow" }) + '</span><i class="' + cc + (hasOT(d) ? " ot" : "") + (sel.has(key(d)) ? " sel" : "") + '"></i><span>' + d.getDate() + '</span>';
+      strip.appendChild(el);
+    }
+
+    let n = 1; while (!goingIn(addDays(today, n)) && n < 400) n++;
+    const ns = addDays(today, n);
+    const kindTxt = rotaWorks(code(ns)) && !onLeave(ns) ? (code(ns) === "D" ? "Day" : "Night") : "Overtime";
+    $("nextShift").textContent = kindTxt + ", " + fmtShort(ns) + " (" + relative(n) + ")";
+    $("nextShift").dataset.key = key(ns);
+    let o = 1; while (!trueOff(addDays(today, o)) && o < 400) o++;
+    const no = addDays(today, o);
+    $("nextOff").textContent = fmtShort(no) + " (" + relative(o) + ")" + (onLeave(no) ? " · leave" : "");
+    $("nextOff").dataset.key = key(no);
+  }
+
+  // ---------- render: month ----------
+  function renderMonth() {
+    $("monthTitle").textContent = fmt(view, { month: "long", year: "numeric" });
+    const grid = $("grid"); grid.innerHTML = "";
+    if (filter) grid.dataset.f = filter; else delete grid.dataset.f;
+    const monday = new Date(2024, 0, 1);
+    for (let k = 0; k < 7; k++) {
+      const h = document.createElement("div"); h.className = "dow";
+      h.textContent = fmt(addDays(monday, k), { weekday: "short" }).slice(0, 3);
+      grid.appendChild(h);
+    }
+    const lead = (view.getDay() + 6) % 7;
+    for (let k = 0; k < lead; k++) { const b = document.createElement("div"); b.className = "cell blank"; grid.appendChild(b); }
+    const days = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
+    let sD = 0, sN = 0, sO = 0, ot = 0, alm = 0;
+    for (let dnum = 1; dnum <= days; dnum++) {
+      const d = new Date(view.getFullYear(), view.getMonth(), dnum), c = code(d), m = mark(d), k = key(d);
+      const al = !!(m && m.al), kd = kind(d);
+      if (kd === "day") sD++; else if (kd === "night") sN++; else sO++;
+      if (al && rotaWorks(c)) alm++;
+      if (m && m.ot) ot += Number(m.otHours) || 0;
+
+      const el = document.createElement("button");
+      el.type = "button";
+      el.dataset.key = k;
+      el.className = "cell " + c + (al ? " L m-leave" : "") + " m-" + kd + (m && m.ot ? " m-ot" : "") +
+        (sameDay(d, today) ? " today" : "") + (sel.has(k) ? " sel" : "");
+      let desc = fmt(d, { weekday: "long", day: "numeric", month: "long" }) + ": " + (al ? "Annual leave (rota: " + LABEL[c] + ")" : LABEL[c]);
+      if (m && m.ot) desc += ", overtime " + hrs(m.otHours || 0) + " hours";
+      if (m && m.note) desc += ". Note: " + m.note;
+      if (selecting) desc += sel.has(k) ? ". Selected" : ". Not selected";
+      el.title = desc; el.setAttribute("aria-label", desc);
+      if (selecting) el.setAttribute("aria-pressed", String(sel.has(k)));
+      el.innerHTML = '<span class="n">' + dnum + '</span><span class="tag">' + (al ? "Leave" : TAG[c]) + '</span>'
+        + (m && m.ot ? '<span class="ot-badge">+' + hrs(m.otHours || 0) + '</span>' : '')
+        + (m && m.note ? '<span class="note-dot"></span>' : '');
+      grid.appendChild(el);
+    }
+    $("statDay").textContent = sD; $("statNight").textContent = sN; $("statOff").textContent = sO;
+    $("statOT").textContent = hrs(ot); $("statALm").textContent = alm;
+
+    let aly = 0;
+    const y = view.getFullYear();
+    Object.keys(marks).forEach(k => {
+      if (!marks[k] || !marks[k].al || !k.startsWith(y + "-")) return;
+      if (rotaWorks(code(fromKey(k)))) aly++;
+    });
+    $("statALy").textContent = aly;
+    $("statALyLabel").textContent = "Leave in " + y;
+
+    document.querySelectorAll(".stat[data-f]").forEach(s => s.setAttribute("aria-pressed", String(s.dataset.f === filter)));
+    const names = { day: "day shifts", night: "night shifts", off: "days off", ot: "overtime days", leave: "leave days" };
+    $("filterNote").textContent = filter ? "Showing " + names[filter] + ". Tap the total again to show all days." : "Tap a total to highlight those days.";
+    $("hint").textContent = selecting ? "Tap days to add or remove them." : "Tap a day to edit. Press and hold to select several.";
+    $("btnSelect").textContent = selecting ? "Done" : "Select days";
+  }
+
+  // ---------- render: selection bar ----------
+  let otEntry = false;
+  function renderBar() {
+    $("selbar").hidden = !selecting;
+    document.body.classList.toggle("selecting", selecting);
+    if (!selecting) return;
+    const keys = [...sel];
+    const n = keys.length;
+    let rostered = 0, allLeave = n > 0, need = 0;
+    keys.forEach(k => {
+      const d = fromKey(k);
+      if (rotaWorks(code(d))) rostered++;
+      if (!onLeave(d)) allLeave = false;
+      if (rotaWorks(code(d)) && !onLeave(d)) need++;
+    });
+    $("selCount").textContent = n === 0 ? "Select days" : plural(n, "day") + " selected";
+    $("selSummary").textContent = n === 0 ? "Tap days in the calendar" : plural(rostered, "rostered shift") + " · " + plural(n - rostered, "day") + " off";
+    $("selLeave").textContent = allLeave ? "Remove leave" : "Annual leave" + (need ? " (" + need + ")" : "");
+    $("selLeave").dataset.remove = allLeave ? "1" : "";
+    ["selLeave", "selOT", "selClear"].forEach(id => $(id).disabled = n === 0 || readOnly);
+    $("selActions").hidden = otEntry;
+    $("selOTRow").hidden = !otEntry;
+  }
+
+  function renderAll() { renderToday(); renderMonth(); renderBar(); if (!$("picker").hidden) renderPicker(); }
+
+  // ---------- selection ----------
+  function startSelect() {
+    if (!selecting) { selecting = true; sel.clear(); otEntry = false; }
+    closeSheet();
+    renderToday(); renderMonth(); renderBar();
+  }
+  function endSelect() { selecting = false; sel.clear(); otEntry = false; renderToday(); renderMonth(); renderBar(); }
+  function toggleSel(k) { if (sel.has(k)) sel.delete(k); else sel.add(k); renderToday(); renderMonth(); renderBar(); }
+  function buzz() { try { if (navigator.vibrate) navigator.vibrate(12); } catch (e) {} }
+
+  function applyBulk(fn, label) {
+    const changes = {}, prev = {};
+    sel.forEach(k => {
+      prev[k] = marks[k] ? Object.assign({}, marks[k]) : null;
+      const nv = fn(marks[k] ? Object.assign({}, marks[k]) : { al: false, ot: false, otHours: 0, note: "" }, fromKey(k));
+      changes[k] = (nv.al || nv.ot || nv.note) ? nv : null;
+    });
+    endSelect();
+    saveMany(changes);
+    showToast(label, () => saveMany(prev));
+  }
+
+  $("selLeave").addEventListener("click", () => {
+    const remove = $("selLeave").dataset.remove === "1";
+    const n = sel.size;
+    applyBulk(m => Object.assign(m, { al: !remove }), remove ? "Leave removed from " + plural(n, "day") : plural(n, "day") + " marked as annual leave");
+  });
+  $("selOT").addEventListener("click", () => { otEntry = true; renderBar(); $("selOTHours").focus(); });
+  $("selOTBack").addEventListener("click", () => { otEntry = false; renderBar(); });
+  document.querySelectorAll("#selOTRow [data-h]").forEach(b => b.addEventListener("click", () => { $("selOTHours").value = b.dataset.h; }));
+  $("selOTApply").addEventListener("click", () => {
+    const h = parseFloat($("selOTHours").value);
+    if (!(h > 0 && h <= 24)) { $("selOTHours").focus(); showToast("Enter hours between 0.5 and 24", null); return; }
+    const n = sel.size;
+    applyBulk(m => Object.assign(m, { ot: true, otHours: h }), hrs(h) + "h overtime added to " + plural(n, "day"));
+  });
+  $("selClear").addEventListener("click", () => {
+    const n = sel.size;
+    applyBulk(() => ({ al: false, ot: false, otHours: 0, note: "" }), "Cleared " + plural(n, "day"));
+  });
+  $("selMonth").addEventListener("click", () => {
+    const days = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
+    for (let d = 1; d <= days; d++) sel.add(key(new Date(view.getFullYear(), view.getMonth(), d)));
+    renderToday(); renderMonth(); renderBar();
+  });
+  $("selDone").addEventListener("click", endSelect);
+  $("btnSelect").addEventListener("click", () => selecting ? endSelect() : startSelect());
+
+  // ---------- month grid: tap, long-press, swipe ----------
+  const grid = $("grid");
+  const lp = { t: null, fired: false, x: 0, y: 0, key: null };
+  grid.addEventListener("pointerdown", e => {
+    const c = e.target.closest(".cell[data-key]"); if (!c) return;
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    lp.fired = false; lp.x = e.clientX; lp.y = e.clientY; lp.key = c.dataset.key;
+    clearTimeout(lp.t);
+    lp.t = setTimeout(() => {
+      lp.t = null; lp.fired = true; buzz();
+      if (!selecting) startSelect();
+      if (!sel.has(lp.key)) toggleSel(lp.key);
+    }, 450);
+  });
+  grid.addEventListener("pointermove", e => {
+    if (lp.t && Math.hypot(e.clientX - lp.x, e.clientY - lp.y) > 10) { clearTimeout(lp.t); lp.t = null; }
+  });
+  ["pointerup", "pointercancel", "pointerleave"].forEach(ev => grid.addEventListener(ev, () => { clearTimeout(lp.t); lp.t = null; }));
+  grid.addEventListener("contextmenu", e => { if (e.target.closest(".cell")) e.preventDefault(); });
+  grid.addEventListener("click", e => {
+    const c = e.target.closest(".cell[data-key]"); if (!c) return;
+    if (lp.fired) { lp.fired = false; return; }
+    const k = c.dataset.key;
+    if (selecting) toggleSel(k); else openSheet(fromKey(k));
+  });
+
+  let x0 = null, y0 = null;
+  grid.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+  grid.addEventListener("touchend", e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) { clearTimeout(lp.t); lp.t = null; lp.fired = true; shiftMonth(dx < 0 ? 1 : -1); }
+    x0 = null;
+  });
+
+  // ---------- other taps ----------
+  $("todayMain").addEventListener("click", () => selecting ? toggleSel(key(today)) : openSheet(today));
+  $("strip").addEventListener("click", e => {
+    const b = e.target.closest("[data-key]"); if (!b) return;
+    if (selecting) toggleSel(b.dataset.key); else openSheet(fromKey(b.dataset.key));
+  });
+  $("nextShift").addEventListener("click", e => showInCalendar(fromKey(e.currentTarget.dataset.key)));
+  $("nextOff").addEventListener("click", e => showInCalendar(fromKey(e.currentTarget.dataset.key)));
+  document.querySelectorAll(".stat[data-f]").forEach(s => s.addEventListener("click", () => {
+    filter = filter === s.dataset.f ? null : s.dataset.f; renderMonth();
+  }));
+
+  function showInCalendar(d) {
+    view = new Date(d.getFullYear(), d.getMonth(), 1);
+    renderMonth();
+    const card = $("monthCard");
+    try { card.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }); } catch (e) { card.scrollIntoView(); }
+    const cell = grid.querySelector('.cell[data-key="' + key(d) + '"]');
+    if (cell) { cell.classList.remove("flash"); void cell.offsetWidth; cell.classList.add("flash"); }
+  }
+
+  // ---------- month & year picker ----------
+  const MIN_YEAR = 2005, MAX_YEAR = 2099;
+  let pickYear = view.getFullYear();
+  (() => {
+    const selY = $("pyYear");
+    for (let y = MIN_YEAR; y <= MAX_YEAR; y++) { const o = document.createElement("option"); o.value = y; o.textContent = y; selY.appendChild(o); }
+  })();
+  function renderPicker() {
+    $("pyYear").value = pickYear;
+    $("pyPrev").disabled = pickYear <= MIN_YEAR;
+    $("pyNext").disabled = pickYear >= MAX_YEAR;
+    const box = $("pyMonths"); box.innerHTML = "";
+    for (let m = 0; m < 12; m++) {
+      const first = new Date(pickYear, m, 1), days = new Date(pickYear, m + 1, 0).getDate();
+      let work = 0, al = 0;
+      for (let d = 1; d <= days; d++) { const dd = new Date(pickYear, m, d); if (rotaWorks(code(dd))) { if (onLeave(dd)) al++; else work++; } }
+      const b = document.createElement("button");
+      b.type = "button"; b.dataset.m = m;
+      const isCur = pickYear === view.getFullYear() && m === view.getMonth();
+      const isNow = pickYear === today.getFullYear() && m === today.getMonth();
+      b.className = (isCur ? "cur" : "") + (isNow ? " now" : "");
+      const valid = !(pickYear === MIN_YEAR && m < 9);
+      b.disabled = !valid;
+      b.innerHTML = "<b>" + fmt(first, { month: "short" }) + "</b><span>" + (valid ? plural(work, "shift") + (al ? " · " + al + " AL" : "") : "—") + "</span>";
+      b.setAttribute("aria-label", fmt(first, { month: "long", year: "numeric" }) + (valid ? ", " + plural(work, "shift") : ""));
+      box.appendChild(b);
+    }
+  }
+  function openPicker() { pickYear = view.getFullYear(); $("picker").hidden = false; $("monthTitleBtn").setAttribute("aria-expanded", "true"); renderPicker(); }
+  function closePicker() { $("picker").hidden = true; $("monthTitleBtn").setAttribute("aria-expanded", "false"); }
+  $("monthTitleBtn").addEventListener("click", () => $("picker").hidden ? openPicker() : closePicker());
+  $("pyPrev").addEventListener("click", () => { pickYear = Math.max(MIN_YEAR, pickYear - 1); renderPicker(); });
+  $("pyNext").addEventListener("click", () => { pickYear = Math.min(MAX_YEAR, pickYear + 1); renderPicker(); });
+  $("pyYear").addEventListener("change", () => { pickYear = Number($("pyYear").value); renderPicker(); });
+  $("pyMonths").addEventListener("click", e => {
+    const b = e.target.closest("button[data-m]"); if (!b || b.disabled) return;
+    view = new Date(pickYear, Number(b.dataset.m), 1);
+    closePicker(); renderMonth();
+  });
+
+  // ---------- day editor ----------
+  let editing = null;
+  function openSheet(d) {
+    editing = d;
+    const c = code(d), m = mark(d) || {};
+    $("sheetTitle").textContent = fmt(d, { weekday: "long", day: "numeric", month: "long" });
+    $("sheetRota").textContent = crew + " shift rota: " + LABEL[c] + " · " + relative(between(today, d));
+    $("sheetSw").className = "sw " + (c === "S" ? "N" : c === "O" ? "" : c);
+    $("optAL").checked = !!m.al;
+    $("optALdesc").textContent = rotaWorks(c) ? "Take this shift as leave." : "You're not rostered this day, so it won't count against your leave.";
+    $("optOT").checked = !!m.ot;
+    $("otHours").value = m.otHours || 12;
+    $("noteIn").value = m.note || "";
+    $("sheetMsg").hidden = true;
+    ["optAL", "optOT", "otHours", "noteIn", "btnSave", "btnClear"].forEach(id => $(id).disabled = readOnly);
+    if (readOnly) { $("sheetMsg").textContent = "You can view this calendar but not change it."; $("sheetMsg").hidden = false; }
+    $("scrim").hidden = false; $("sheet").hidden = false;
+    setTimeout(() => $("optAL").focus(), 0);
+  }
+  function closeSheet() { $("scrim").hidden = true; $("sheet").hidden = true; editing = null; }
+
+  $("btnSave").addEventListener("click", () => {
+    if (!editing) return;
+    const al = $("optAL").checked, ot = $("optOT").checked;
+    const h = parseFloat($("otHours").value);
+    if (ot && !(h > 0 && h <= 24)) { $("sheetMsg").textContent = "Enter overtime hours between 0.5 and 24."; $("sheetMsg").hidden = false; return; }
+    const note = $("noteIn").value.trim();
+    const k = key(editing), d = editing;
+    const prev = marks[k] ? Object.assign({}, marks[k]) : null;
+    const value = (al || ot || note) ? { al, ot, otHours: ot ? h : 0, note } : null;
+    closeSheet();
+    saveMany({ [k]: value });
+    showToast("Saved " + fmtShort(d), () => saveMany({ [k]: prev }));
+  });
+  $("btnClear").addEventListener("click", () => {
+    if (!editing) return;
+    const k = key(editing), d = editing;
+    const prev = marks[k] ? Object.assign({}, marks[k]) : null;
+    closeSheet();
+    saveMany({ [k]: null });
+    if (prev) showToast("Cleared " + fmtShort(d), () => saveMany({ [k]: prev }));
+  });
+  $("btnCancel").addEventListener("click", closeSheet);
+  $("scrim").addEventListener("click", closeSheet);
+  $("optOT").addEventListener("change", () => { if ($("optOT").checked && !$("otHours").value) $("otHours").value = 12; });
+  $("otHours").addEventListener("input", () => { if ($("otHours").value) $("optOT").checked = true; });
+  document.querySelectorAll(".opt [data-h]").forEach(b => b.addEventListener("click", () => { $("otHours").value = b.dataset.h; $("optOT").checked = true; }));
+
+  // ---------- toast ----------
+  let toastTimer = null, toastUndo = null;
+  function showToast(text, undo) {
+    $("toastText").textContent = text;
+    toastUndo = undo;
+    $("toastUndo").hidden = !undo;
+    $("toast").hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { $("toast").hidden = true; toastUndo = null; }, 6000);
+  }
+  $("toastUndo").addEventListener("click", () => {
+    const u = toastUndo; toastUndo = null; $("toast").hidden = true; clearTimeout(toastTimer);
+    if (u) { u(); showToast("Undone", null); }
+  });
+
+  // ---------- saving ----------
+  async function saveMany(changes) {
+    const keys = Object.keys(changes);
+    const prev = {};
+    keys.forEach(k => { prev[k] = marks[k]; if (changes[k]) marks[k] = changes[k]; else delete marks[k]; });
+    renderAll();
+    if (store === "cloud" && db && uid) {
+      const col = db.collection("data/users/" + uid);
+      let failed = 0;
+      for (const k of keys) {
+        try {
+          if (changes[k]) await col.doc("m" + k).set(Object.assign({ date: k }, changes[k]));
+          else await col.doc("m" + k).delete();
+        } catch (e) {
+          failed++;
+          if (prev[k]) marks[k] = prev[k]; else delete marks[k];
+        }
+      }
+      if (failed) { renderAll(); setSync("err", "Couldn't save " + plural(failed, "day") + ". Check your connection and try again."); }
+      else setSync("ok", "Synced to your account · works on any device");
+    } else {
+      lsSet("marks", marks);
+    }
+  }
+
+  // ---------- crew & navigation ----------
+  function setCrew(c, persist) {
+    crew = c;
+    document.querySelectorAll("#crewPicker button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.crew === c)));
+    renderAll();
+    if (!persist) return;
+    lsSet("crew2", c);
+    if (store === "cloud" && db && uid && !readOnly) {
+      db.collection("data/users/" + uid).doc("settings").set({ crew: c }).catch(() => {});
+    }
+  }
+  function shiftMonth(n) { view = new Date(view.getFullYear(), view.getMonth() + n, 1); renderMonth(); if (!$("picker").hidden) { pickYear = view.getFullYear(); renderPicker(); } }
+
+  document.querySelectorAll("#crewPicker button").forEach(b => b.addEventListener("click", () => setCrew(b.dataset.crew, true)));
+  $("btnPrev").addEventListener("click", () => shiftMonth(-1));
+  $("btnNext").addEventListener("click", () => shiftMonth(1));
+  $("btnToday").addEventListener("click", () => { closePicker(); showInCalendar(today); });
+  document.addEventListener("keydown", e => {
+    if (!$("sheet").hidden) { if (e.key === "Escape") closeSheet(); return; }
+    if (e.key === "Escape" && !$("picker").hidden) { closePicker(); return; }
+    if (e.key === "Escape" && selecting) { endSelect(); return; }
+    if (e.target.closest && e.target.closest("input, select")) return;
+    if (e.key === "ArrowLeft") shiftMonth(-1);
+    if (e.key === "ArrowRight") shiftMonth(1);
+  });
+
+  function setSync(state, text) { $("sync").className = "sync " + (state || ""); $("syncText").textContent = text; }
+
+  setCrew(crew, false);
+  setSync("", "Saved on this device");
+
+  // ---------- account storage (only where the page is allowed to use it) ----------
+  (async () => {
+    if (!window.claude || !window.claude.use) return;
+    try {
+      const [dbNs, userNs] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
+      if (!dbNs || !userNs) return;
+      const id = await userNs.id();
+      if (!id) return;
+      try { if (userNs.can && (await userNs.can("data.write")) === false) readOnly = true; } catch (e) {}
+      db = dbNs; uid = id;
+      const col = db.collection("data/users/" + uid);
+      let first = true;
+      col.onSnapshot(snap => {
+        const next = {}; let savedCrew = null;
+        snap.docs.forEach(doc => {
+          const v = doc.data(); if (!v) return;
+          if (doc.id === "settings") { savedCrew = v.crew; return; }
+          if (v.date) next[v.date] = { al: !!v.al, ot: !!v.ot, otHours: Number(v.otHours) || 0, note: v.note || "" };
+        });
+        if (first) {
+          first = false;
+          store = "cloud";
+          const local = lsGet("marks", {}) || {};
+          const toMove = Object.keys(local).filter(k => !next[k]);
+          if (toMove.length && !readOnly) {
+            (async () => {
+              for (const k of toMove) {
+                try { await col.doc("m" + k).set(Object.assign({ date: k }, local[k])); } catch (e) {}
+              }
+              lsSet("marks", {});
+            })();
+            toMove.forEach(k => next[k] = local[k]);
+          }
+          if (!savedCrew && !readOnly) col.doc("settings").set({ crew }).catch(() => {});
+        }
+        marks = next;
+        if (savedCrew && ROTA[savedCrew] && savedCrew !== crew) { crew = savedCrew; lsSet("crew2", crew); setCrew(crew, false); }
+        else renderAll();
+        setSync("ok", readOnly ? "View only" : "Synced to your account · works on any device");
+      }, () => {
+        store = "local";
+        setSync("err", "Couldn't reach your account. Changes are saved on this device only.");
+      });
+    } catch (e) { /* stay on device storage */ }
+  })();
+})();
+</script>
+</body></html>
