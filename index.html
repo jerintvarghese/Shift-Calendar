@@ -20,6 +20,7 @@
     --ot: #D2492A;
     --ot-ink: #FFFFFF;
     --sel: #1668E3;
+    --bh: #8A3FD1;
     --sel-ink: #FFFFFF;
     --today-ring: #181C24;
     --focus: #1668E3;
@@ -46,6 +47,7 @@
       --ot: #F0673F;
       --ot-ink: #230A03;
       --sel: #5B9BFF;
+      --bh: #B784F0;
       --sel-ink: #06142B;
       --today-ring: #E7EAEF;
       --focus: #5B9BFF;
@@ -69,6 +71,7 @@
     --ot: #F0673F;
     --ot-ink: #230A03;
     --sel: #5B9BFF;
+    --bh: #B784F0;
     --sel-ink: #06142B;
     --today-ring: #E7EAEF;
     --focus: #5B9BFF;
@@ -282,6 +285,15 @@
     position: absolute; top: 4px; right: 4px; background: var(--ot); color: var(--ot-ink);
     font-family: var(--mono); font-size: 9px; font-weight: 500; line-height: 1; padding: 3px 4px; border-radius: 4px;
   }
+  .bh-badge {
+    position: absolute; right: 4px; bottom: 4px; font-family: var(--mono); font-size: 8.5px; font-weight: 500; line-height: 1;
+    padding: 2px 3px; border-radius: 3px; background: var(--surface); color: var(--ink); border: 1px solid var(--line);
+  }
+  .cell.bh { box-shadow: inset 0 0 0 2px var(--bh); }
+  .cell.bh.sel { box-shadow: inset 0 0 0 3px var(--sel); }
+  .cell.bh .note-dot { bottom: auto; top: 22px; }
+  .strip-cell i.bh::before { content: ""; position: absolute; left: 50%; bottom: -3px; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: var(--bh); }
+  .sw.BH { width: auto; height: auto; font-style: normal; font-family: var(--mono); font-size: 9px; padding: 1px 3px; border: 1.5px solid var(--bh); color: var(--ink); background: var(--surface); }
   .note-dot { position: absolute; bottom: 5px; right: 5px; width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: .7; }
   .cell.today { outline: 2.5px solid var(--today-ring); outline-offset: 1.5px; }
   .cell.sel { box-shadow: inset 0 0 0 3px var(--sel); }
@@ -335,6 +347,8 @@
   .pay-settings .chk input { width: 20px; height: 20px; margin: 0; accent-color: var(--leave); }
   .fn-row { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 10px; }
   .fn-row .chk { grid-column: auto; }
+  .bh-row { justify-content: flex-start; gap: 10px 22px; }
+  .fn-hours input[type="time"] { width: 104px !important; height: 36px; border: 1px solid var(--line); border-radius: 8px; padding: 0 8px; background: var(--surface); color: var(--ink); font-variant-numeric: tabular-nums; }
   .fn-hours { display: flex !important; align-items: center; gap: 8px; }
   .fn-hours input { width: 72px !important; }
   .pay-settings input:disabled { opacity: .45; }
@@ -395,7 +409,7 @@
     display: grid; gap: 14px; max-height: 90%; overflow-y: auto;
   }
   .sheet h2 { margin: 0; font-family: var(--display); font-weight: 700; font-size: 26px; text-transform: uppercase; line-height: 1; }
-  .sheet .rota-line { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); margin-top: 6px; }
+  .sheet .info-line { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); margin-top: 6px; }
   .opt { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: center; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); }
   .opt input[type="checkbox"] { width: 22px; height: 22px; margin: 0; accent-color: var(--leave); }
   .opt.ot input[type="checkbox"] { accent-color: var(--ot); }
@@ -483,6 +497,18 @@
     .today-main { transition: background-color .35s ease, color .35s ease, transform .12s ease; }
   }
 
+  /* Share */
+  .top-actions { display: flex; align-items: center; gap: 8px; }
+  .share-btn { display: inline-flex; align-items: center; gap: 6px; height: 40px; background: var(--surface); }
+  .share-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+  .share-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  #qr { width: 164px; height: 164px; border-radius: 12px; background: #FFFFFF; padding: 8px; border: 1px solid var(--line); box-sizing: content-box; image-rendering: pixelated; }
+  .share-actions { display: grid; gap: 10px; flex: 1; min-width: 220px; }
+  .share-link { font-family: var(--mono); font-size: 12.5px; padding: 10px 12px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--line); word-break: break-all; user-select: all; }
+  .btn.wa { display: inline-flex; align-items: center; text-decoration: none; background: #1FA855; border-color: #1FA855; color: #FFFFFF; }
+  .small-note { font-size: 12.5px; }
+  #page-more > .share-card { grid-column: 1 / -1; }
+
   /* ---------- Desktop and tablet layout ---------- */
   .side-brand { display: none; }
   @media (min-width: 900px) {
@@ -508,6 +534,7 @@
     #page-today { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: start; }
     #page-more { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
     #page-more > section:last-child { grid-column: 1 / -1; }
+    #page-more > .share-card { grid-column: 1 / -1; }
     #page-calendar { max-width: 860px; }
     #page-pay { max-width: 760px; }
 
@@ -548,12 +575,18 @@
 
 <div class="wrap">
   <header class="top">
-    <div class="brand">Shift Calendar<small>4 crews · 8-week rotation</small></div>
+    <div class="brand">Shift Calendar<small>4 crews · 8-week cycle</small></div>
+    <div class="top-actions">
+    <button type="button" class="icon-btn share-btn" id="btnShareTop" aria-label="Share this app">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5.5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="18.5" r="2.5"/><path d="M8.2 10.8l7.6-4.1M8.2 13.2l7.6 4.1"/></svg>
+      <span>Share</span>
+    </button>
     <div class="seg" role="group" aria-label="Choose your shift" id="crewPicker">
       <button type="button" id="crew-A" data-crew="A" aria-pressed="false">A</button>
       <button type="button" id="crew-B" data-crew="B" aria-pressed="false">B</button>
       <button type="button" id="crew-C" data-crew="C" aria-pressed="true">C</button>
       <button type="button" id="crew-D" data-crew="D" aria-pressed="false">D</button>
+    </div>
     </div>
   </header>
   <main>
@@ -631,6 +664,7 @@
       <span><i class="sw"></i>Off</span>
       <span><i class="sw L"></i>Annual leave</span>
       <span><i class="sw OT"></i>Overtime</span>
+      <span><i class="sw BH">BH</i>Irish bank holiday</span>
     </div>
   </section>
   </div>
@@ -645,6 +679,12 @@
       <label><span class="k">Hours per shift</span><input type="number" id="payShiftHrs" step="0.25" min="1" max="24" inputmode="decimal" value="12"></label>
       <label><span class="k">Shift allowance (%)</span><input type="number" id="payAllow" step="0.5" min="0" max="100" inputmode="decimal" value="0"></label>
       <label class="chk"><input type="checkbox" id="payLeave" checked><span>Pay annual leave at basic rate</span></label>
+      <div class="fn-row bh-row">
+        <label class="fn-hours"><input type="time" id="payStart" value="07:00" aria-label="Day shift start time"><span class="k">day shift starts</span></label>
+        <label class="fn-hours"><input type="time" id="payNightStart" value="19:00" aria-label="Night shift start time"><span class="k">night shift starts</span></label>
+        <label class="fn-hours"><input type="number" id="payBhRate" step="0.25" min="1" max="4" inputmode="decimal" value="2" aria-label="Total pay rate for hours worked on a bank holiday"><span class="k">× for hours worked on a bank holiday (code 317 = +1×)</span></label>
+        <label class="fn-hours"><input type="number" id="payBhOff" step="0.5" min="0" max="24" inputmode="decimal" value="8" aria-label="Public holiday hours paid per bank holiday"><span class="k">hrs public holiday pay per bank holiday (code 319)</span></label>
+      </div>
       <div class="fn-row">
         <label class="chk"><input type="checkbox" id="payFn"><span>Fortnight completion pay</span></label>
         <label class="fn-hours"><input type="number" id="payFnHrs" step="0.5" min="0" max="24" inputmode="decimal" value="3" aria-label="Extra hours per complete fortnight"><span class="k">extra hrs per fortnight</span></label>
@@ -667,13 +707,29 @@
       </div>
     </div>
     <div id="payOut"></div>
-    <p class="pay-rules">Overtime on a Sunday is paid at double time for every hour. On other days, the first 4 hours are time-and-a-half and the rest are double time. Fortnight completion pay, if switched on, adds the extra hours at basic rate once for each pay fortnight. Pay fortnights run Monday to Sunday and are paid the Friday after. Figures are gross, before tax, PRSI and USC.</p>
+    <p class="pay-rules">Overtime on a Sunday is paid at double time for every hour. On other days, the first 4 hours are time-and-a-half and the rest are double time. Fortnight completion pay, if switched on, adds the extra hours at basic rate once for each pay fortnight. Irish bank holidays are marked BH. Hours worked on the bank holiday itself (midnight to midnight, using your day and night shift start times) get the extra rate (code 317), everyone gets public holiday pay for each bank holiday (code 319), and overtime on a bank holiday is double time. Pay fortnights run Monday to Sunday and are paid the Friday after. Figures are gross, before tax, PRSI and USC.</p>
   </section>
   </div>
   <div class="page" id="page-more" data-page="more" hidden>
+  <section class="card more share-card" id="shareCard">
+    <h2 class="h2">Share the app</h2>
+    <p class="muted" style="margin:0">Send the app to your crew. They open the link, pick their shift, and can add it to their home screen.</p>
+    <div class="share-row">
+      <canvas id="qr" width="164" height="164" aria-label="QR code for the app link" hidden></canvas>
+      <div class="share-actions">
+        <div class="share-link" id="shareLink"></div>
+        <div class="actions">
+          <button type="button" class="btn primary" id="btnShare">Share…</button>
+          <button type="button" class="btn" id="btnCopy">Copy link</button>
+          <a class="btn wa" id="btnWhatsApp" target="_blank" rel="noopener">WhatsApp</a>
+        </div>
+        <span class="muted small-note" id="qrNote" hidden>Scan the code with a phone camera to open the app.</span>
+      </div>
+    </div>
+  </section>
   <section class="card more">
     <h2 class="h2">Your shift</h2>
-    <p class="muted" style="margin:0">Pick your crew. Everything in the app follows this rota.</p>
+    <p class="muted" style="margin:0">Pick your crew. Everything in the app follows this shift pattern.</p>
     <div class="crew-big" role="group" aria-label="Choose your shift" id="crewBig">
       <button type="button" data-crew="A" aria-pressed="false"><b>A</b><span></span></button>
       <button type="button" data-crew="B" aria-pressed="false"><b>B</b><span></span></button>
@@ -690,13 +746,14 @@
       <span><i class="sw"></i>Off</span>
       <span><i class="sw L"></i>Annual leave</span>
       <span><i class="sw OT"></i>Overtime</span>
+      <span><i class="sw BH">BH</i>Irish bank holiday</span>
     </div>
   </section>
   <section class="card more">
     <h2 class="h2">About</h2>
     <div class="sync" id="sync"><i></i><span id="syncText">Saved on this device</span></div>
   <footer class="about">
-    <div>Rota follows the Vistakon 8-week pattern, counted from Monday 10 October 2005. Leave counts only days you would have worked. Your leave, overtime and pay details are saved on this phone or computer only. Check against your official rota if anything changes on site.</div>
+    <div>Shifts follow the Vistakon 8-week pattern, counted from Monday 10 October 2005. Irish bank holidays are shown automatically. Leave counts only days you would have worked. Your leave, overtime and pay details are saved on this phone or computer only. Check against your official schedule if anything changes on site.</div>
     <div class="credit">Designed and built by <strong>Jerin T Varghese</strong></div>
   </footer>
   </section>
@@ -711,7 +768,7 @@
 
 
 <nav class="tabbar" aria-label="App sections">
-  <div class="side-brand" aria-hidden="true">Shift Calendar<small>4 crews · 8-week rotation</small></div>
+  <div class="side-brand" aria-hidden="true">Shift Calendar<small>4 crews · 8-week cycle</small></div>
   <div class="tabbar-in">
     <span class="tab-ind" id="tabInd" aria-hidden="true"></span>
     <button type="button" data-go="today" aria-current="page">
@@ -761,7 +818,7 @@
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
   <div>
     <h2 id="sheetTitle">—</h2>
-    <div class="rota-line"><i class="sw" id="sheetSw"></i><span id="sheetRota">—</span></div>
+    <div class="info-line"><i class="sw" id="sheetSw"></i><span id="sheetInfo">—</span></div>
   </div>
   <div class="opt">
     <input type="checkbox" id="optAL">
@@ -794,26 +851,12 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
 <script>
-/*
-  Shift Calendar by Jerin T Varghese.
-  The ROTA pattern below is adapted from viscalendar (https://github.com/phryniszak/viscalendar):
-  MIT License, Copyright (c) 2020 phryniszak.
-  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
-  associated documentation files (the "Software"), to deal in the Software without restriction,
-  including without limitation the rights to use, copy, modify, merge, publish, distribute,
-  sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions: The above copyright notice and this
-  permission notice shall be included in all copies or substantial portions of the Software.
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-  NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
-  OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+/* Shift Calendar by Jerin T Varghese. */
 (() => {
   // D = day, S = first night of a block, N = night, E = finishing nights (morning), O = off
-  const ROTA = {
+  const PATTERN = {
     A: "ODDOODD" + "DOODDOO" + "ODDOODD" + "DOODDOO" + "SNEOSNN" + "EOSNEOO" + "SNEOSNN" + "EOSNEOO",
     B: "SNEOSNN" + "EOSNEOO" + "SNEOSNN" + "EOSNEOO" + "ODDOODD" + "DOODDOO" + "ODDOODD" + "DOODDOO",
     C: "EOODDOO" + "ODDOODD" + "DOODDOO" + "ODDOODD" + "DOSNEOO" + "SNEOSNN" + "EOSNEOO" + "SNEOSNN",
@@ -823,7 +866,7 @@
   const DAY_MS = 86400000;
   const LABEL = { D: "Day shift", S: "Night shift", N: "Night shift", E: "Finishing nights", O: "Day off" };
   const TAG = { D: "Day", S: "Night", N: "Night", E: "Ends", O: "Off" };
-  const rotaWorks = c => c === "D" || c === "S" || c === "N";
+  const isWorkShift = c => c === "D" || c === "S" || c === "N";
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
 
@@ -841,9 +884,9 @@
 
   const lsGet = (k, fb) => { try { const v = localStorage.getItem(k); return v == null ? fb : JSON.parse(v); } catch (e) { return fb; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
-  { const c = lsGet("crew2", null); if (c && ROTA[c]) crew = c; }
+  { const c = lsGet("crew2", null); if (c && PATTERN[c]) crew = c; }
   marks = lsGet("marks", {}) || {};
-  let pay = Object.assign({ rate: null, shiftHrs: 12, allow: 0, payLeave: true, fnOn: true, fnHrs: 3 }, lsGet("pay", {}) || {});
+  let pay = Object.assign({ rate: null, shiftHrs: 12, allow: 0, payLeave: true, fnOn: true, fnHrs: 3, bhRate: 2, bhPhHrs: 8, dayStart: "07:00", nightStart: "19:00" }, lsGet("pay", {}) || {});
 
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -852,7 +895,7 @@
   // ---------- date helpers ----------
   const dayNum = d => Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - ZERO) / DAY_MS);
   const idx = d => { const n = dayNum(d); return n < 0 ? -1 : n % 56; };
-  const code = d => { const i = idx(d); return i < 0 ? "O" : ROTA[crew][i]; };
+  const code = d => { const i = idx(d); return i < 0 ? "O" : PATTERN[crew][i]; };
   const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
   const between = (a, b) => dayNum(b) - dayNum(a);
   const fmt = (d, o) => d.toLocaleDateString("en-IE", o);
@@ -864,8 +907,37 @@
   const mark = d => marks[key(d)] || null;
   const onLeave = d => { const m = mark(d); return !!(m && m.al); };
   const hasOT = d => { const m = mark(d); return !!(m && m.ot); };
-  const goingIn = d => (rotaWorks(code(d)) && !onLeave(d)) || hasOT(d);
+  const goingIn = d => (isWorkShift(code(d)) && !onLeave(d)) || hasOT(d);
   const trueOff = d => !goingIn(d) && code(d) !== "E";
+
+  // Irish public (bank) holidays, worked out for any year
+  const bhCache = {};
+  function easterSunday(y) {
+    const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4;
+    const f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+    const i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+    const month = Math.floor((h + l - 7 * m + 114) / 31), day = ((h + l - 7 * m + 114) % 31) + 1;
+    return new Date(y, month - 1, day);
+  }
+  const firstMonday = (y, m) => { const d = new Date(y, m, 1); return addDays(d, (8 - d.getDay()) % 7); };
+  const lastMonday = (y, m) => { const d = new Date(y, m + 1, 0); return addDays(d, -((d.getDay() + 6) % 7)); };
+  function bankHolidays(y) {
+    if (bhCache[y]) return bhCache[y];
+    const list = {};
+    const add = (d, name) => { list[key(d)] = name; };
+    add(new Date(y, 0, 1), "New Year's Day");
+    if (y >= 2023) { const feb1 = new Date(y, 1, 1); add(feb1.getDay() === 5 ? feb1 : firstMonday(y, 1), "St Brigid's Day"); }
+    add(new Date(y, 2, 17), "St Patrick's Day");
+    add(addDays(easterSunday(y), 1), "Easter Monday");
+    add(firstMonday(y, 4), "May bank holiday");
+    add(firstMonday(y, 5), "June bank holiday");
+    add(firstMonday(y, 7), "August bank holiday");
+    add(lastMonday(y, 9), "October bank holiday");
+    add(new Date(y, 11, 25), "Christmas Day");
+    add(new Date(y, 11, 26), "St Stephen's Day");
+    return (bhCache[y] = list);
+  }
+  const bankHoliday = d => bankHolidays(d.getFullYear())[key(d)] || null;
   const hrs = h => (Math.round(h * 10) / 10).toString();
   const plural = (n, one, many) => n + " " + (n === 1 ? one : (many || one + "s"));
 
@@ -878,7 +950,7 @@
   // category used by the monthly totals and highlight filter
   function kind(d) {
     const c = code(d);
-    if (onLeave(d) && rotaWorks(c)) return "off";
+    if (onLeave(d) && isWorkShift(c)) return "off";
     if (c === "D") return "day";
     if (c === "S" || c === "N") return "night";
     return "off";
@@ -890,7 +962,7 @@
     const main = $("todayMain");
     let status = LABEL[c], cls = c === "D" ? "is-day" : (c === "S" || c === "N") ? "is-night" : "";
     if (m && m.al) { status = "Annual leave"; cls = "is-leave"; }
-    else if (m && m.ot && !rotaWorks(c)) { status = "Overtime"; cls = "is-day"; }
+    else if (m && m.ot && !isWorkShift(c)) { status = "Overtime"; cls = "is-day"; }
     main.className = "today-main " + cls;
     $("todayDate").textContent = fmt(today, { weekday: "long", day: "numeric", month: "long" }) + " · " + crew + " shift";
     $("todayStatus").textContent = status;
@@ -898,16 +970,18 @@
     let sub = "";
     if (goingIn(today)) {
       let left = 0; while (goingIn(addDays(today, left + 1)) && left < 60) left++;
-      const isDay = c === "D" || !rotaWorks(c);
+      const isDay = c === "D" || !isWorkShift(c);
       sub = left === 0 ? "Last one of this block" : left + " more after " + (isDay ? "today" : "tonight");
       if (m && m.ot) sub = hrs(m.otHours || 0) + "h overtime · " + sub;
     } else {
       let n = 1; while (!goingIn(addDays(today, n)) && n < 400) n++;
       const nd = addDays(today, n);
-      sub = "Back " + relative(n) + (rotaWorks(code(nd)) && !onLeave(nd) ? " on " + (code(nd) === "D" ? "days" : "nights") : " for overtime");
+      sub = "Back " + relative(n) + (isWorkShift(code(nd)) && !onLeave(nd) ? " on " + (code(nd) === "D" ? "days" : "nights") : " for overtime");
       if (c === "E") sub = "Home after this morning. " + sub;
     }
     if (m && m.note) sub += " · " + m.note;
+    const bhToday = bankHoliday(today);
+    if (bhToday) sub = bhToday + " (bank holiday) · " + sub;
     $("todaySub").textContent = sub;
 
     const i = idx(today);
@@ -925,13 +999,13 @@
       el.dataset.key = key(d);
       const desc = fmtShort(d) + ": " + (cc === "L" ? "Annual leave" : LABEL[cc]) + (hasOT(d) ? " + overtime" : "");
       el.title = desc; el.setAttribute("aria-label", desc);
-      el.innerHTML = '<span>' + fmt(d, { weekday: "narrow" }) + '</span><i class="' + cc + (hasOT(d) ? " ot" : "") + (sel.has(key(d)) ? " sel" : "") + '"></i><span>' + d.getDate() + '</span>';
+      el.innerHTML = '<span>' + fmt(d, { weekday: "narrow" }) + '</span><i class="' + cc + (hasOT(d) ? " ot" : "") + (sel.has(key(d)) ? " sel" : "") + (bankHoliday(d) ? " bh" : "") + '"></i><span>' + d.getDate() + '</span>';
       strip.appendChild(el);
     }
 
     let n = 1; while (!goingIn(addDays(today, n)) && n < 400) n++;
     const ns = addDays(today, n);
-    const kindTxt = rotaWorks(code(ns)) && !onLeave(ns) ? (code(ns) === "D" ? "Day" : "Night") : "Overtime";
+    const kindTxt = isWorkShift(code(ns)) && !onLeave(ns) ? (code(ns) === "D" ? "Day" : "Night") : "Overtime";
     $("nextShift").textContent = kindTxt + ", " + fmtShort(ns) + " (" + relative(n) + ")";
     $("nextShift").dataset.key = key(ns);
     let o = 1; while (!trueOff(addDays(today, o)) && o < 400) o++;
@@ -955,7 +1029,7 @@
     const first = q.start, last = q.end;
     const days = []; for (let d = first; between(d, last) >= 0; d = addDays(d, 1)) days.push(d);
     let done = 0, left = 0;
-    days.forEach(d => { if (goingIn(d) && rotaWorks(code(d))) { if (between(d, today) > 0) done++; else left++; } });
+    days.forEach(d => { if (goingIn(d) && isWorkShift(code(d))) { if (between(d, today) > 0) done++; else left++; } });
     const r = calcPay(days);
     $("sumTitle").textContent = sumOffset === 0 ? "This pay period" : sumOffset === -1 ? "Last pay period" : sumOffset === 1 ? "Next pay period" : (sumOffset < 0 ? Math.abs(sumOffset) + " periods ago" : "In " + sumOffset + " periods");
     $("sumDates").textContent = fmtShort(first) + " – " + fmtShort(last);
@@ -998,7 +1072,7 @@
       const d = new Date(view.getFullYear(), view.getMonth(), dnum), c = code(d), m = mark(d), k = key(d);
       const al = !!(m && m.al), kd = kind(d);
       if (kd === "day") sD++; else if (kd === "night") sN++; else sO++;
-      if (al && rotaWorks(c)) alm++;
+      if (al && isWorkShift(c)) alm++;
       if (m && m.ot) ot += Number(m.otHours) || 0;
 
       const el = document.createElement("button");
@@ -1007,13 +1081,16 @@
       el.style.setProperty("--c", dnum);
       el.className = "cell " + c + (al ? " L m-leave" : "") + " m-" + kd + (m && m.ot ? " m-ot" : "") +
         (sameDay(d, today) ? " today" : "") + (sel.has(k) ? " sel" : "");
-      let desc = fmt(d, { weekday: "long", day: "numeric", month: "long" }) + ": " + (al ? "Annual leave (rota: " + LABEL[c] + ")" : LABEL[c]);
+      let desc = fmt(d, { weekday: "long", day: "numeric", month: "long" }) + ": " + (al ? "Annual leave (scheduled: " + LABEL[c] + ")" : LABEL[c]);
       if (m && m.ot) desc += ", overtime " + hrs(m.otHours || 0) + " hours";
       if (m && m.note) desc += ". Note: " + m.note;
       if (selecting) desc += sel.has(k) ? ". Selected" : ". Not selected";
       el.title = desc; el.setAttribute("aria-label", desc);
       if (selecting) el.setAttribute("aria-pressed", String(sel.has(k)));
+      const bhn = bankHoliday(d);
+      if (bhn) { el.classList.add("bh"); desc += ". Bank holiday: " + bhn; el.title = desc; el.setAttribute("aria-label", desc); }
       el.innerHTML = '<span class="n">' + dnum + '</span><span class="tag">' + (al ? "Leave" : TAG[c]) + '</span>'
+        + (bhn ? '<span class="bh-badge">BH</span>' : '')
         + (m && m.ot ? '<span class="ot-badge">+' + hrs(m.otHours || 0) + '</span>' : '')
         + (m && m.note ? '<span class="note-dot"></span>' : '');
       grid.appendChild(el);
@@ -1025,7 +1102,7 @@
     const y = view.getFullYear();
     Object.keys(marks).forEach(k => {
       if (!marks[k] || !marks[k].al || !k.startsWith(y + "-")) return;
-      if (rotaWorks(code(fromKey(k)))) aly++;
+      if (isWorkShift(code(fromKey(k)))) aly++;
     });
     $("statALy").textContent = aly;
     $("statALyLabel").textContent = "Leave in " + y;
@@ -1051,9 +1128,9 @@
     let rostered = 0, allLeave = n > 0, need = 0;
     keys.forEach(k => {
       const d = fromKey(k);
-      if (rotaWorks(code(d))) rostered++;
+      if (isWorkShift(code(d))) rostered++;
       if (!onLeave(d)) allLeave = false;
-      if (rotaWorks(code(d)) && !onLeave(d)) need++;
+      if (isWorkShift(code(d)) && !onLeave(d)) need++;
     });
     $("selCount").textContent = n === 0 ? "Select days" : plural(n, "day") + " selected";
     $("selSummary").textContent = n === 0 ? "Tap days in the calendar" : plural(rostered, "rostered shift") + " · " + plural(n - rostered, "day") + " off";
@@ -1187,7 +1264,7 @@
     for (let m = 0; m < 12; m++) {
       const first = new Date(pickYear, m, 1), days = new Date(pickYear, m + 1, 0).getDate();
       let work = 0, al = 0;
-      for (let d = 1; d <= days; d++) { const dd = new Date(pickYear, m, d); if (rotaWorks(code(dd))) { if (onLeave(dd)) al++; else work++; } }
+      for (let d = 1; d <= days; d++) { const dd = new Date(pickYear, m, d); if (isWorkShift(code(dd))) { if (onLeave(dd)) al++; else work++; } }
       const b = document.createElement("button");
       b.type = "button"; b.dataset.m = m; b.style.setProperty("--m", m);
       const isCur = pickYear === view.getFullYear() && m === view.getMonth();
@@ -1263,13 +1340,26 @@
   function calcPay(days) {
     const rate = Number(pay.rate), sh = Number(pay.shiftHrs) || 0, allow = Number(pay.allow) || 0;
     let dayN = 0, nightN = 0, leaveN = 0, ot15 = 0, ot2 = 0, otSun = 0;
-    const otList = [];
+    const otList = [], bhList = [], bhWorked = {};
+    // Shift times: day shift from the start time, night shift from when the day shift ends
+    const toMin = (t, fb) => { const [h, m] = String(t || fb).split(":").map(Number); return (isFinite(h) ? h : 0) * 60 + (isFinite(m) ? m : 0); };
+    const dayMin = toMin(pay.dayStart, "07:00"), nightMin = toMin(pay.nightStart, "19:00");
     days.forEach(d => {
-      const c = code(d), m = mark(d), al = !!(m && m.al);
-      if (rotaWorks(c)) { if (al) leaveN++; else if (c === "D") dayN++; else nightN++; }
+      const c = code(d), m = mark(d), al = !!(m && m.al), bh = bankHoliday(d);
+      if (isWorkShift(c)) { if (al) leaveN++; else if (c === "D") dayN++; else nightN++; }
+      if (isWorkShift(c) && !al && sh > 0) {
+        const s0 = c === "D" ? dayMin : nightMin, s1 = s0 + sh * 60;          // minutes from this day's midnight
+        for (let k = 0; k <= 1; k++) {                                        // this day and the next
+          const dd = addDays(d, k), name = bankHoliday(dd);
+          if (!name) continue;
+          const ov = Math.min(s1, (k + 1) * 1440) - Math.max(s0, k * 1440);
+          if (ov > 0) bhWorked[key(dd)] = (bhWorked[key(dd)] || 0) + ov / 60;
+        }
+      }
+      if (bh) bhList.push({ d, name: bh });
       if (m && m.ot) {
         const h = Number(m.otHours) || 0;
-        if (d.getDay() === 0) { otSun += h; otList.push({ d, h, a: 0, b: 0, sun: h }); }
+        if (d.getDay() === 0 || bh) { otSun += h; otList.push({ d, h, a: 0, b: 0, sun: h, bh: !!bh }); }
         else { const a = Math.min(4, h); ot15 += a; ot2 += h - a; otList.push({ d, h, a, b: h - a, sun: 0 }); }
       }
     });
@@ -1283,13 +1373,18 @@
     }
     const fnH = fnCount * (Number(pay.fnHrs) || 0);
     const has = rate > 0;
+    const bhRate = Math.max(1, Number(pay.bhRate) || 1), bhPhHrs = Math.max(0, Number(pay.bhPhHrs) || 0);
+    bhList.forEach(b => { b.hours = bhWorked[key(b.d)] || 0; });
+    const bhPremH = Object.values(bhWorked).reduce((a, b) => a + b, 0);
+    const bhOffH = bhList.length * bhPhHrs;
     const r = {
+      bhList, bhRate, bhPremH, bhOffH, bhPrem: bhPremH * rate * (bhRate - 1), bhOff: bhOffH * rate,
       dayN, nightN, leaveN, basicH, leaveH, ot15, ot2, otSun, otList, has, fnCount, fnH, fnLen: days.length,
       basic: basicH * rate, allowance: basicH * rate * allow / 100, leave: leaveH * rate,
       o15: ot15 * rate * 1.5, o2: ot2 * rate * 2, oSun: otSun * rate * 2, fn: fnH * rate
     };
-    r.total = r.basic + r.allowance + r.leave + r.o15 + r.o2 + r.oSun + r.fn;
-    r.hours = basicH + leaveH + ot15 + ot2 + otSun + fnH;
+    r.total = r.basic + r.allowance + r.leave + r.o15 + r.o2 + r.oSun + r.fn + r.bhPrem + r.bhOff;
+    r.hours = basicH + leaveH + ot15 + ot2 + otSun + fnH + bhOffH;
     return r;
   }
   function renderPay() {
@@ -1303,8 +1398,12 @@
     $("payFn").checked = !!pay.fnOn;
     if (act !== $("payFnHrs")) $("payFnHrs").value = pay.fnHrs;
     $("payFnHrs").disabled = !pay.fnOn;
+    if (act !== $("payBhRate")) $("payBhRate").value = pay.bhRate;
+    if (act !== $("payBhOff")) $("payBhOff").value = pay.bhPhHrs;
+    if (act !== $("payStart")) $("payStart").value = pay.dayStart || "07:00";
+    if (act !== $("payNightStart")) $("payNightStart").value = pay.nightStart || "19:00";
     $("payEditBtn").textContent = Number(pay.rate) > 0
-      ? money(Number(pay.rate)) + "/h · " + hrs(Number(pay.shiftHrs) || 0) + "h shifts" + (Number(pay.allow) ? " · +" + hrs(Number(pay.allow)) + "%" : "") + (pay.fnOn ? " · +" + hrs(Number(pay.fnHrs) || 0) + "h/fortnight" : "")
+      ? money(Number(pay.rate)) + "/h · " + hrs(Number(pay.shiftHrs) || 0) + "h shifts" + (Number(pay.allow) ? " · +" + hrs(Number(pay.allow)) + "%" : "") + (pay.fnOn ? " · +" + hrs(Number(pay.fnHrs) || 0) + "h/fortnight" : "") + " · " + (pay.dayStart || "07:00") + "/" + (pay.nightStart || "19:00")
       : "Pay details";
 
     $("paySelChip").hidden = !(selecting && sel.size) && payPreset !== "sel";
@@ -1336,15 +1435,22 @@
     if (pay.fnOn) rows.push('<tr><td>Fortnight completion pay<small>' + (r.fnCount
       ? plural(r.fnCount, "pay fortnight") + ' × ' + hrs(Number(pay.fnHrs) || 0) + 'h at basic rate'
       : 'only paid for a full pay fortnight (Mon–Sun)') + '</small></td><td class="num">' + hrs(r.fnH) + '</td><td class="num">' + amt(r.fn) + '</td></tr>');
+    if (r.bhList.length && r.bhRate > 1) rows.push('<tr><td><i class="sw BH">BH</i>Hours worked on bank holiday<small>code 317 · extra ' + hrs(r.bhRate - 1) + '× on top of basic</small></td><td class="num">' + hrs(r.bhPremH) + '</td><td class="num">' + amt(r.bhPrem) + '</td></tr>');
+    if (r.bhList.length && r.bhOffH) rows.push('<tr><td><i class="sw BH">BH</i>Public holiday pay<small>code 319 · ' + plural(r.bhList.length, "bank holiday") + ' × ' + hrs(Number(pay.bhPhHrs) || 0) + 'h at basic rate</small></td><td class="num">' + hrs(r.bhOffH) + '</td><td class="num">' + amt(r.bhOff) + '</td></tr>');
     if (r.ot15) rows.push('<tr><td><i class="sw OT"></i>Overtime at 1.5×<small>first 4 hours, Mon–Sat</small></td><td class="num">' + hrs(r.ot15) + '</td><td class="num">' + amt(r.o15) + '</td></tr>');
     if (r.ot2) rows.push('<tr><td><i class="sw OT"></i>Overtime at 2×<small>after 4 hours, Mon–Sat</small></td><td class="num">' + hrs(r.ot2) + '</td><td class="num">' + amt(r.o2) + '</td></tr>');
-    if (r.otSun) rows.push('<tr><td><i class="sw OT"></i>Sunday overtime at 2×<small>all hours</small></td><td class="num">' + hrs(r.otSun) + '</td><td class="num">' + amt(r.oSun) + '</td></tr>');
+    if (r.otSun) rows.push('<tr><td><i class="sw OT"></i>Sunday &amp; bank holiday overtime at 2×<small>all hours</small></td><td class="num">' + hrs(r.otSun) + '</td><td class="num">' + amt(r.oSun) + '</td></tr>');
 
     let otDetail = "";
+    if (r.bhList.length) {
+      otDetail += '<details open><summary>Bank holidays in this period (' + r.bhList.length + ')</summary><ul class="ot-days">' +
+        r.bhList.map(b => '<li><span>' + fmtShort(b.d) + '<br><small class="muted">' + esc(b.name) + '</small></span><b>' + (b.hours ? hrs(b.hours) + 'h worked on the day' : 'Not working') + '</b></li>').join("") +
+        '</ul></details>';
+    }
     if (r.otList.length) {
-      otDetail = '<details><summary>Overtime by day (' + r.otList.length + ')</summary><ul class="ot-days">' +
+      otDetail += '<details><summary>Overtime by day (' + r.otList.length + ')</summary><ul class="ot-days">' +
         r.otList.map(o => '<li><span>' + fmtShort(o.d) + '<br><small class="muted">' +
-          (o.sun ? hrs(o.sun) + 'h × 2 (Sunday)' : hrs(o.a) + 'h × 1.5' + (o.b ? ' + ' + hrs(o.b) + 'h × 2' : '')) +
+          (o.sun ? hrs(o.sun) + 'h × 2 (' + (o.bh ? 'bank holiday' : 'Sunday') + ')' : hrs(o.a) + 'h × 1.5' + (o.b ? ' + ' + hrs(o.b) + 'h × 2' : '')) +
           '</small></span><b>' + (r.has ? money((o.sun * 2 + o.a * 1.5 + o.b * 2) * Number(pay.rate)) : hrs(o.h) + 'h') + '</b></li>').join("") +
         '</ul></details>';
     }
@@ -1379,12 +1485,20 @@
     pay.payLeave = $("payLeave").checked;
     pay.fnOn = $("payFn").checked;
     const fh = parseFloat($("payFnHrs").value); if (fh >= 0 && fh <= 24) pay.fnHrs = fh;
+    const br = parseFloat($("payBhRate").value); if (br >= 1 && br <= 4) pay.bhRate = br;
+    const bo = parseFloat($("payBhOff").value); if (bo >= 0 && bo <= 24) pay.bhPhHrs = bo;
+    if (/^\d{2}:\d{2}$/.test($("payStart").value)) pay.dayStart = $("payStart").value;
+    if (/^\d{2}:\d{2}$/.test($("payNightStart").value)) pay.nightStart = $("payNightStart").value;
     savePay(); renderPay();
   }
   ["payRate", "payShiftHrs", "payAllow"].forEach(id => $(id).addEventListener("input", readPayInputs));
   $("payLeave").addEventListener("change", readPayInputs);
   $("payFn").addEventListener("change", readPayInputs);
   $("payFnHrs").addEventListener("input", readPayInputs);
+  $("payBhRate").addEventListener("input", readPayInputs);
+  $("payBhOff").addEventListener("input", readPayInputs);
+  $("payStart").addEventListener("change", readPayInputs);
+  $("payNightStart").addEventListener("change", readPayInputs);
   $("payEditBtn").addEventListener("click", () => {
     const open = $("paySettings").hidden;
     $("paySettings").hidden = !open; $("payEditBtn").setAttribute("aria-expanded", String(open));
@@ -1411,10 +1525,11 @@
     editing = d;
     const c = code(d), m = mark(d) || {};
     $("sheetTitle").textContent = fmt(d, { weekday: "long", day: "numeric", month: "long" });
-    $("sheetRota").textContent = crew + " shift rota: " + LABEL[c] + " · " + relative(between(today, d));
+    const bhName = bankHoliday(d);
+    $("sheetInfo").textContent = crew + " shift: " + LABEL[c] + " · " + relative(between(today, d)) + (bhName ? " · Bank holiday: " + bhName : "");
     $("sheetSw").className = "sw " + (c === "S" ? "N" : c === "O" ? "" : c);
     $("optAL").checked = !!m.al;
-    $("optALdesc").textContent = rotaWorks(c) ? "Take this shift as leave." : "You're not rostered this day, so it won't count against your leave.";
+    $("optALdesc").textContent = isWorkShift(c) ? "Take this shift as leave." : "You're not rostered this day, so it won't count against your leave.";
     $("optOT").checked = !!m.ot;
     $("otHours").value = m.otHours || 12;
     $("noteIn").value = m.note || "";
@@ -1492,6 +1607,41 @@
       lsSet("marks", marks);
     }
   }
+
+  // ---------- share ----------
+  const APP_URL = "https://jerintvarghese.github.io/Shift-Calendar/";
+  const SHARE_TEXT = "Shift Calendar: see your A, B, C or D shifts, mark leave and overtime, and check your pay.";
+  $("shareLink").textContent = APP_URL;
+  $("btnWhatsApp").href = "https://wa.me/?text=" + encodeURIComponent(SHARE_TEXT + " " + APP_URL);
+  function drawQR() {
+    try {
+      if (typeof qrcode !== "function") return;
+      const q = qrcode(0, "M"); q.addData(APP_URL); q.make();
+      const n = q.getModuleCount(), cv = $("qr"), size = 164, cell = size / n, ctx = cv.getContext("2d");
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, size, size); ctx.fillStyle = "#181C24";
+      for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) ctx.fillRect(Math.floor(c * cell), Math.floor(r * cell), Math.ceil(cell), Math.ceil(cell));
+      cv.hidden = false; $("qrNote").hidden = false;
+    } catch (e) { $("qrNote").hidden = true; }
+  }
+  if (document.readyState === "complete") drawQR(); else window.addEventListener("load", drawQR);
+  async function copyLink() {
+    try { await navigator.clipboard.writeText(APP_URL); showToast("Link copied", null); }
+    catch (e) {
+      const r = document.createRange(); r.selectNodeContents($("shareLink"));
+      const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      showToast("Link selected. Press copy to copy it.", null);
+    }
+  }
+  async function shareApp() {
+    if (navigator.share) {
+      try { await navigator.share({ title: "Shift Calendar", text: SHARE_TEXT, url: APP_URL }); return; }
+      catch (e) { if (e && e.name === "AbortError") return; }
+    }
+    showPage("more"); copyLink();
+  }
+  $("btnShare").addEventListener("click", shareApp);
+  $("btnShareTop").addEventListener("click", shareApp);
+  $("btnCopy").addEventListener("click", copyLink);
 
   // ---------- pages ----------
   let firstShow = true;
@@ -1598,7 +1748,7 @@
         const next = {}; let savedCrew = null;
         snap.docs.forEach(doc => {
           const v = doc.data(); if (!v) return;
-          if (doc.id === "settings") { savedCrew = v.crew; if (v.pay && typeof v.pay === "object") { pay = Object.assign({ rate: null, shiftHrs: 12, allow: 0, payLeave: true, fnOn: true, fnHrs: 3 }, v.pay); lsSet("pay", pay); if (Number(pay.rate) > 0 && document.activeElement !== $("payRate")) { $("paySettings").hidden = true; $("payEditBtn").setAttribute("aria-expanded", "false"); } } return; }
+          if (doc.id === "settings") { savedCrew = v.crew; if (v.pay && typeof v.pay === "object") { pay = Object.assign({ rate: null, shiftHrs: 12, allow: 0, payLeave: true, fnOn: true, fnHrs: 3, bhRate: 2, bhPhHrs: 8, dayStart: "07:00", nightStart: "19:00" }, v.pay); lsSet("pay", pay); if (Number(pay.rate) > 0 && document.activeElement !== $("payRate")) { $("paySettings").hidden = true; $("payEditBtn").setAttribute("aria-expanded", "false"); } } return; }
           if (v.date) next[v.date] = { al: !!v.al, ot: !!v.ot, otHours: Number(v.otHours) || 0, note: v.note || "" };
         });
         if (first) {
@@ -1618,7 +1768,7 @@
           if (!savedCrew && !readOnly) col.doc("settings").set({ crew, pay }).catch(() => {});
         }
         marks = next;
-        if (savedCrew && ROTA[savedCrew] && savedCrew !== crew) { crew = savedCrew; lsSet("crew2", crew); setCrew(crew, false); }
+        if (savedCrew && PATTERN[savedCrew] && savedCrew !== crew) { crew = savedCrew; lsSet("crew2", crew); setCrew(crew, false); }
         else renderAll();
         setSync("ok", readOnly ? "View only" : "Synced to your account · works on any device");
       }, () => {
