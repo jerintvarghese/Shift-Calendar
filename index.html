@@ -674,6 +674,13 @@
       <h2 class="h2">Pay calculator</h2>
       <button type="button" class="chip-btn" id="payEditBtn" aria-expanded="true" aria-controls="paySettings">Pay details</button>
     </div>
+    <div style="display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap">
+      <div class="seg" role="group" aria-label="How you're paid" id="payFreqSeg" style="width:auto">
+        <button type="button" data-f="fortnight" aria-pressed="true" style="width:auto;padding:0 12px;font-size:13px">Fortnightly</button>
+        <button type="button" data-f="month" aria-pressed="false" style="width:auto;padding:0 12px;font-size:13px">Monthly</button>
+      </div>
+      <label class="fn-hours" id="monthlyPaydayRow" hidden><input type="number" id="payMonthlyDay" step="1" min="1" max="31" inputmode="numeric" value="28" aria-label="Day of the following month you're paid"><span class="k">day of next month paid</span></label>
+    </div>
     <div class="pay-settings" id="paySettings">
       <label><span class="k">Hourly rate (€)</span><input type="number" id="payRate" step="0.01" min="0" inputmode="decimal" placeholder="e.g. 18.50"></label>
       <label><span class="k">Hours per shift</span><input type="number" id="payShiftHrs" step="0.25" min="1" max="24" inputmode="decimal" value="12"></label>
@@ -681,7 +688,7 @@
       <label class="chk"><input type="checkbox" id="payLeave" checked><span>Pay annual leave at basic rate</span></label>
       <div class="fn-row bh-row">
         <label class="fn-hours"><input type="time" id="payStart" value="07:00" aria-label="Day shift start time"><span class="k">day shift starts</span></label>
-        <label class="fn-hours"><input type="time" id="payNightStart" value="19:00" aria-label="Night shift start time"><span class="k">night shift starts</span></label>
+        <label class="fn-hours"><input type="time" id="payNightStart" value="19:30" aria-label="Night shift start time"><span class="k">night shift starts</span></label>
         <label class="fn-hours"><input type="number" id="payBhRate" step="0.25" min="1" max="4" inputmode="decimal" value="2" aria-label="Total pay rate for hours worked on a bank holiday"><span class="k">× for hours worked on a bank holiday (code 317 = +1×)</span></label>
         <label class="fn-hours"><input type="number" id="payBhOff" step="0.5" min="0" max="24" inputmode="decimal" value="8" aria-label="Public holiday hours paid per bank holiday"><span class="k">hrs public holiday pay per bank holiday (code 319)</span></label>
       </div>
@@ -886,7 +893,7 @@
   const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
   { const c = lsGet("crew2", null); if (c && PATTERN[c]) crew = c; }
   marks = lsGet("marks", {}) || {};
-  let pay = Object.assign({ rate: null, shiftHrs: 12, allow: 0, payLeave: true, fnOn: true, fnHrs: 3, bhRate: 2, bhPhHrs: 8, dayStart: "07:00", nightStart: "19:00" }, lsGet("pay", {}) || {});
+  let pay = Object.assign({ rate: null, shiftHrs: 12, allow: 0, payLeave: true, fnOn: true, fnHrs: 3, bhRate: 2, bhPhHrs: 8, dayStart: "07:00", nightStart: "19:30", payFreq: "fortnight", monthlyPayday: 28 }, lsGet("pay", {}) || {});
 
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -1025,7 +1032,7 @@
 
   function renderSummary() {
     if (!$("sumCounts") || typeof calcPay !== "function") return;
-    const q = periodOf(today, sumOffset);
+    const q = periodFor(today, sumOffset);
     const first = q.start, last = q.end;
     const days = []; for (let d = first; between(d, last) >= 0; d = addDays(d, 1)) days.push(d);
     let done = 0, left = 0;
@@ -1314,11 +1321,22 @@
     const start = addDays(PAY_ANCHOR, n * 14);
     return { start, end: addDays(start, 13), payday: addDays(start, 18) };
   }
+  // Monthly pay: calendar month, paid on a chosen day of the following month.
+  function monthPeriodOf(d, offset) {
+    const start = new Date(d.getFullYear(), d.getMonth() + (offset || 0), 1);
+    const end = new Date(start.getFullYear(), start.getMonth() + 1, 0);
+    const dom = Math.max(1, Math.min(31, Number(pay.monthlyPayday) || 28));
+    const paydayMonth = new Date(start.getFullYear(), start.getMonth() + 2, 0); // last day of the payday month
+    const payday = new Date(paydayMonth.getFullYear(), paydayMonth.getMonth(), Math.min(dom, paydayMonth.getDate()));
+    return { start, end, payday };
+  }
+  // Whichever pay frequency the user is on (fortnightly or monthly).
+  function periodFor(d, offset) { return pay.payFreq === "month" ? monthPeriodOf(d, offset) : periodOf(d, offset); }
   function presetRange(p) {
-    if (p === "period") { const q = periodOf(today); return [q.start, q.end]; }
-    if (p === "lastperiod") { const q = periodOf(today, -1); return [q.start, q.end]; }
-    if (p === "nextperiod") { const q = periodOf(today, 1); return [q.start, q.end]; }
-    if (p === "poff") { const q = periodOf(today, payOffset); return [q.start, q.end]; }
+    if (p === "period") { const q = periodFor(today); return [q.start, q.end]; }
+    if (p === "lastperiod") { const q = periodFor(today, -1); return [q.start, q.end]; }
+    if (p === "nextperiod") { const q = periodFor(today, 1); return [q.start, q.end]; }
+    if (p === "poff") { const q = periodFor(today, payOffset); return [q.start, q.end]; }
     const dow = (today.getDay() + 6) % 7; // Monday = 0
     const monday = addDays(today, -dow);
     if (p === "week") return [monday, addDays(monday, 6)];
@@ -1343,7 +1361,7 @@
     const otList = [], bhList = [], bhWorked = {};
     // Shift times: day shift from the start time, night shift from when the day shift ends
     const toMin = (t, fb) => { const [h, m] = String(t || fb).split(":").map(Number); return (isFinite(h) ? h : 0) * 60 + (isFinite(m) ? m : 0); };
-    const dayMin = toMin(pay.dayStart, "07:00"), nightMin = toMin(pay.nightStart, "19:00");
+    const dayMin = toMin(pay.dayStart, "07:00"), nightMin = toMin(pay.nightStart, "19:30");
     days.forEach(d => {
       const c = code(d), m = mark(d), al = !!(m && m.al), bh = bankHoliday(d);
       if (isWorkShift(c)) { if (al) leaveN++; else if (c === "D") dayN++; else nightN++; }
@@ -1401,9 +1419,12 @@
     if (act !== $("payBhRate")) $("payBhRate").value = pay.bhRate;
     if (act !== $("payBhOff")) $("payBhOff").value = pay.bhPhHrs;
     if (act !== $("payStart")) $("payStart").value = pay.dayStart || "07:00";
-    if (act !== $("payNightStart")) $("payNightStart").value = pay.nightStart || "19:00";
+    if (act !== $("payNightStart")) $("payNightStart").value = pay.nightStart || "19:30";
+    document.querySelectorAll("#payFreqSeg [data-f]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.f === (pay.payFreq || "fortnight"))));
+    $("monthlyPaydayRow").hidden = pay.payFreq !== "month";
+    if (act !== $("payMonthlyDay")) $("payMonthlyDay").value = pay.monthlyPayday || 28;
     $("payEditBtn").textContent = Number(pay.rate) > 0
-      ? money(Number(pay.rate)) + "/h · " + hrs(Number(pay.shiftHrs) || 0) + "h shifts" + (Number(pay.allow) ? " · +" + hrs(Number(pay.allow)) + "%" : "") + (pay.fnOn ? " · +" + hrs(Number(pay.fnHrs) || 0) + "h/fortnight" : "") + " · " + (pay.dayStart || "07:00") + "/" + (pay.nightStart || "19:00")
+      ? money(Number(pay.rate)) + "/h · " + hrs(Number(pay.shiftHrs) || 0) + "h shifts" + (Number(pay.allow) ? " · +" + hrs(Number(pay.allow)) + "%" : "") + (pay.fnOn ? " · +" + hrs(Number(pay.fnHrs) || 0) + "h/fortnight" : "") + " · " + (pay.dayStart || "07:00") + "/" + (pay.nightStart || "19:30")
       : "Pay details";
 
     $("paySelChip").hidden = !(selecting && sel.size) && payPreset !== "sel";
@@ -1415,7 +1436,7 @@
     else if (days.length) {
       label = fmtShort(days[0]) + " – " + fmtShort(days[days.length - 1]);
       if (["period", "lastperiod", "nextperiod", "poff"].includes(payPreset)) {
-        const pd = periodOf(days[0]).payday;
+        const pd = periodFor(days[0]).payday;
         label += " · paid " + fmtShort(pd) + " (" + relative(between(today, pd)) + ")";
       }
     }
@@ -1489,6 +1510,7 @@
     const bo = parseFloat($("payBhOff").value); if (bo >= 0 && bo <= 24) pay.bhPhHrs = bo;
     if (/^\d{2}:\d{2}$/.test($("payStart").value)) pay.dayStart = $("payStart").value;
     if (/^\d{2}:\d{2}$/.test($("payNightStart").value)) pay.nightStart = $("payNightStart").value;
+    const md = parseInt($("payMonthlyDay").value, 10); if (md >= 1 && md <= 31) pay.monthlyPayday = md;
     savePay(); renderPay();
   }
   ["payRate", "payShiftHrs", "payAllow"].forEach(id => $(id).addEventListener("input", readPayInputs));
@@ -1499,6 +1521,11 @@
   $("payBhOff").addEventListener("input", readPayInputs);
   $("payStart").addEventListener("change", readPayInputs);
   $("payNightStart").addEventListener("change", readPayInputs);
+  $("payMonthlyDay").addEventListener("input", readPayInputs);
+  $("payFreqSeg").addEventListener("click", e => {
+    const b = e.target.closest("[data-f]"); if (!b) return;
+    pay.payFreq = b.dataset.f; savePay(); renderPay(); renderSummary();
+  });
   $("payEditBtn").addEventListener("click", () => {
     const open = $("paySettings").hidden;
     $("paySettings").hidden = !open; $("payEditBtn").setAttribute("aria-expanded", String(open));
@@ -1748,7 +1775,7 @@
         const next = {}; let savedCrew = null;
         snap.docs.forEach(doc => {
           const v = doc.data(); if (!v) return;
-          if (doc.id === "settings") { savedCrew = v.crew; if (v.pay && typeof v.pay === "object") { pay = Object.assign({ rate: null, shiftHrs: 12, allow: 0, payLeave: true, fnOn: true, fnHrs: 3, bhRate: 2, bhPhHrs: 8, dayStart: "07:00", nightStart: "19:00" }, v.pay); lsSet("pay", pay); if (Number(pay.rate) > 0 && document.activeElement !== $("payRate")) { $("paySettings").hidden = true; $("payEditBtn").setAttribute("aria-expanded", "false"); } } return; }
+          if (doc.id === "settings") { savedCrew = v.crew; if (v.pay && typeof v.pay === "object") { pay = Object.assign({ rate: null, shiftHrs: 12, allow: 0, payLeave: true, fnOn: true, fnHrs: 3, bhRate: 2, bhPhHrs: 8, dayStart: "07:00", nightStart: "19:30", payFreq: "fortnight", monthlyPayday: 28 }, v.pay); lsSet("pay", pay); if (Number(pay.rate) > 0 && document.activeElement !== $("payRate")) { $("paySettings").hidden = true; $("payEditBtn").setAttribute("aria-expanded", "false"); } } return; }
           if (v.date) next[v.date] = { al: !!v.al, ot: !!v.ot, otHours: Number(v.otHours) || 0, note: v.note || "" };
         });
         if (first) {
