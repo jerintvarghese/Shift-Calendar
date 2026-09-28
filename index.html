@@ -1052,7 +1052,7 @@
 
   function renderSummary() {
     if (!$("sumCounts") || typeof calcPay !== "function") return;
-    const q = periodFor(today, sumOffset);
+    const q = periodFor(today, currentOffset() + sumOffset);
     const first = q.start, last = q.end;
     const days = []; for (let d = first; between(d, last) >= 0; d = addDays(d, 1)) days.push(d);
     let done = 0, left = 0;
@@ -1352,11 +1352,20 @@
   }
   // Whichever pay frequency the user is on (fortnightly or monthly).
   function periodFor(d, offset) { return pay.payFreq === "month" ? monthPeriodOf(d, offset) : periodOf(d, offset); }
+  // A just-ended period keeps counting as "this pay period" until its payday has actually passed,
+  // rather than switching over the moment the next period's dates begin.
+  function currentOffset() {
+    let n = 0;
+    for (let i = 0; i < 6; i++) {
+      if (between(today, periodFor(today, n - 1).payday) >= 0) n--; else break;
+    }
+    return n;
+  }
   function presetRange(p) {
-    if (p === "period") { const q = periodFor(today); return [q.start, q.end]; }
-    if (p === "lastperiod") { const q = periodFor(today, -1); return [q.start, q.end]; }
-    if (p === "nextperiod") { const q = periodFor(today, 1); return [q.start, q.end]; }
-    if (p === "poff") { const q = periodFor(today, payOffset); return [q.start, q.end]; }
+    if (p === "period") { const q = periodFor(today, currentOffset()); return [q.start, q.end]; }
+    if (p === "lastperiod") { const q = periodFor(today, currentOffset() - 1); return [q.start, q.end]; }
+    if (p === "nextperiod") { const q = periodFor(today, currentOffset() + 1); return [q.start, q.end]; }
+    if (p === "poff") { const q = periodFor(today, currentOffset() + payOffset); return [q.start, q.end]; }
     const dow = (today.getDay() + 6) % 7; // Monday = 0
     const monday = addDays(today, -dow);
     if (p === "week") return [monday, addDays(monday, 6)];
