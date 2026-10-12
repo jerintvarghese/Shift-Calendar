@@ -9,6 +9,7 @@
     --surface: rgba(255, 255, 255, .5);
     --surface-2: rgba(255, 255, 255, .32);
     --glass-blur: blur(34px) saturate(200%);
+    --bar: rgba(244, 246, 249, .98);
     --glass-border: rgba(255, 255, 255, .6);
     --glass-highlight: rgba(255, 255, 255, .7);
     --glass-shadow: 0 12px 34px rgba(20, 20, 30, .14), 0 1px 1px rgba(255,255,255,.5) inset;
@@ -39,7 +40,7 @@
       --bg: #101217;
       --surface: rgba(255, 255, 255, .08);
       --surface-2: rgba(255, 255, 255, .05);
-      --glass-border: rgba(255, 255, 255, .14);
+      --glass-border: rgba(255, 255, 255, .14); --bar: rgba(18, 20, 27, .98);
       --glass-highlight: rgba(255, 255, 255, .1);
       --glass-shadow: 0 12px 34px rgba(0, 0, 0, .45), 0 1px 1px rgba(255,255,255,.06) inset;
       --ink: #E7EAEF;
@@ -66,7 +67,7 @@
     --bg: #101217;
     --surface: rgba(255, 255, 255, .08);
     --surface-2: rgba(255, 255, 255, .05);
-    --glass-border: rgba(255, 255, 255, .14);
+    --glass-border: rgba(255, 255, 255, .14); --bar: rgba(18, 20, 27, .98);
     --glass-highlight: rgba(255, 255, 255, .1);
     --glass-shadow: 0 12px 34px rgba(0, 0, 0, .45), 0 1px 1px rgba(255,255,255,.06) inset;
     --ink: #E7EAEF;
@@ -113,25 +114,25 @@
   /* Tab bar */
   .tabbar {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 9;
-    background: var(--surface); border-top: 1px solid var(--glass-border);
+    background: var(--bar); border-top: 1px solid var(--glass-border);
     box-shadow: 0 1px 0 var(--glass-highlight) inset;
     backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
   }
   .tabbar-in { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
-  .tabbar button { border: 0; background: none; display: grid; justify-items: center; gap: 3px; padding: 6px 0 4px; border-radius: 10px; color: var(--muted); font-size: 12px; font-weight: 600; }
+  .tabbar button { border: 0; background: none; display: grid; justify-items: center; gap: 3px; padding: 6px 0 4px; border-radius: 10px; color: color-mix(in srgb, var(--ink) 62%, transparent); font-size: 12px; font-weight: 600; }
   .tabbar svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
   .tabbar svg circle[r="1.6"] { fill: currentColor; }
   .tabbar button[aria-current="page"] { color: var(--ink); }
   .tabbar-in { position: relative; }
   .tabbar button { position: relative; z-index: 1; transition: color .2s ease; }
   .tab-ind {
-    position: absolute; top: 4px; left: 0; width: calc((100% - 12px) / 4); height: 32px; z-index: 0;
+    position: absolute; top: 4px; left: 0; width: calc((100% - 12px) / 4); height: 28px; z-index: 0;
     display: flex; justify-content: center; pointer-events: none;
     transform: translateX(calc(var(--tab, 0) * (100% + 4px)));
     transition: transform .35s cubic-bezier(.3, 1.3, .5, 1);
   }
-  .tab-ind::before { content: ""; width: 56px; height: 32px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); }
+  .tab-ind::before { content: ""; width: 52px; height: 28px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); }
   .tabbar button[aria-current="page"] svg { animation: tabPop .35s ease-out; }
   @keyframes tabPop { 0% { transform: scale(.8); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
   /* Today summary */
@@ -428,7 +429,7 @@
   .selbar {
     position: fixed; left: 0; right: 0; bottom: calc(66px + env(safe-area-inset-bottom, 0px)); z-index: 8;
     padding: 12px 16px 12px;
-    background: var(--surface); border-top: 2px solid var(--sel);
+    background: var(--bar); border-top: 2px solid var(--sel);
     backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
     box-shadow: 0 -6px 24px rgba(0,0,0,.12), 0 1px 0 var(--glass-highlight) inset;
   }
