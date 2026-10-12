@@ -389,6 +389,39 @@
   .ot-days { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
   .ot-days li { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--line); font-variant-numeric: tabular-nums; }
   .pay-rules { margin: 0; font-size: 12.5px; color: var(--muted); max-width: 65ch; }
+  body.pay-perm .contract-only, body:not(.pay-perm) .perm-only { display: none !important; }
+  .ot-kind { grid-column: 2; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .perm-nav { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; }
+  .perm-nav-t { display: grid; justify-items: center; text-align: center; gap: 2px; }
+  .perm-nav-t b { font-family: var(--display); font-size: 24px; text-transform: uppercase; letter-spacing: .02em; line-height: 1; }
+  .perm-nav-t span { font-size: 13px; }
+  body.pay-perm .pay-settings { grid-template-columns: 1fr 1fr; }
+  .perm-more { grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 10px; font-size: 14px; }
+  .perm-more summary { cursor: pointer; font-weight: 600; }
+  .perm-more-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .perm-more-grid label { display: grid; gap: 4px; min-width: 0; }
+  .perm-more-grid input { height: 42px; border: 1px solid var(--line); border-radius: 8px; padding: 0 10px; background: var(--surface); width: 100%; min-width: 0; font-variant-numeric: tabular-nums; }
+  .simple-list { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+  .simple-list li { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 12px 2px; border-bottom: 1px solid var(--line); font-size: 16px; }
+  .simple-list li small { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+  .simple-list li b { font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 17px; }
+  .pay-save-row { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
+  .pay-save-row .btn { min-width: 96px; height: 44px; }
+  .pay-view { display: grid !important; grid-template-columns: 1fr 1fr; width: 100%; }
+  .pay-view button { width: auto !important; font-family: var(--body) !important; font-size: 14px !important; font-weight: 600 !important; letter-spacing: 0 !important; }
+  .day-list { list-style: none; margin: 0; padding: 0; display: grid; }
+  .day-list li { display: grid; grid-template-columns: 44px 1fr auto; gap: 10px; align-items: center; padding: 9px 2px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+  .day-list li.off { opacity: .55; }
+  .day-list li.now { background: color-mix(in srgb, var(--sel) 10%, transparent); border-radius: 8px; }
+  .day-list .dd { display: grid; justify-items: center; line-height: 1.05; }
+  .day-list .dd b { font-family: var(--display); font-size: 22px; }
+  .day-list .dd span { font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase; }
+  .day-list .what { display: grid; gap: 2px; min-width: 0; font-size: 14.5px; }
+  .day-list .what small { color: var(--muted); font-size: 12.5px; }
+  .day-list .amt { font-weight: 700; font-size: 16px; white-space: nowrap; }
+  .day-list .bar { height: 4px; border-radius: 2px; background: var(--ot); opacity: .8; margin-top: 3px; }
+  .day-list .bar.base { background: var(--ink); opacity: .25; }
+  .day-avg { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--muted); padding: 2px 2px 0; }
   .pay-empty { margin: 0; font-size: 14px; color: var(--muted); padding: 12px; border: 1px dashed var(--line); border-radius: 10px; }
 
   /* Selection bar */
@@ -691,33 +724,58 @@
   <div class="page" id="page-pay" data-page="pay" hidden>
   <section class="card pay" id="payCard">
     <div class="pay-head">
-      <h2 class="h2">Pay calculator</h2>
+      <h2 class="h2">Pay</h2>
       <button type="button" class="chip-btn" id="payEditBtn" aria-expanded="true" aria-controls="paySettings">Pay details</button>
     </div>
+    <div class="seg" role="group" aria-label="Employment type" id="payTypeSeg" style="width:auto">
+      <button type="button" data-t="perm" aria-pressed="false" style="width:auto;padding:0 14px;font-size:14px">Permanent</button>
+      <button type="button" data-t="contract" aria-pressed="true" style="width:auto;padding:0 14px;font-size:14px">Contract</button>
+    </div>
     <div style="display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap">
-      <div class="seg" role="group" aria-label="How you're paid" id="payFreqSeg" style="width:auto">
+      <div class="seg contract-only" role="group" aria-label="How you're paid" id="payFreqSeg" style="width:auto">
         <button type="button" data-f="fortnight" aria-pressed="true" style="width:auto;padding:0 12px;font-size:13px">Fortnightly</button>
         <button type="button" data-f="month" aria-pressed="false" style="width:auto;padding:0 12px;font-size:13px">Monthly</button>
       </div>
-      <label class="fn-hours" id="monthlyPaydayRow" hidden><input type="number" id="payMonthlyDay" step="1" min="1" max="31" inputmode="numeric" value="28" aria-label="Day of the following month you're paid"><span class="k">day of next month paid</span></label>
+      <label class="fn-hours contract-only" id="monthlyPaydayRow" hidden><input type="number" id="payMonthlyDay" step="1" min="1" max="31" inputmode="numeric" value="28" aria-label="Day of the following month you're paid"><span class="k">day of next month paid</span></label>
     </div>
     <div class="pay-settings" id="paySettings">
-      <label><span class="k">Hourly rate (€)</span><input type="number" id="payRate" step="0.01" min="0" inputmode="decimal" placeholder="e.g. 18.50"></label>
-      <label><span class="k">Hours per shift</span><input type="number" id="payShiftHrs" step="0.25" min="1" max="24" inputmode="decimal" value="12"></label>
-      <label><span class="k">Shift allowance (%)</span><input type="number" id="payAllow" step="0.5" min="0" max="100" inputmode="decimal" value="0"></label>
-      <label class="chk"><input type="checkbox" id="payLeave" checked><span>Pay annual leave at basic rate</span></label>
-      <div class="fn-row bh-row">
+      <label class="perm-only"><span class="k">Basic salary per year (€)</span><input type="number" id="pSalary" step="100" min="0" inputmode="decimal" placeholder="e.g. 30000"></label>
+      <p class="pay-rules perm-only" id="pHourlyNote" style="grid-column:2/-1;align-self:end;margin:0 0 4px"></p>
+      <details class="perm-only perm-more">
+        <summary>More settings</summary>
+        <div class="perm-more-grid">
+          <label><span class="k">Hours per month</span><input type="number" id="pMonthHrs" step="1" min="1" max="400" inputmode="decimal" value="169"></label>
+          <label><span class="k">Shift premium (%)</span><input type="number" id="pPrem" step="0.5" min="0" max="100" inputmode="decimal" value="33"></label>
+          <label><span class="k">Month extra hours</span><input type="number" id="pMxHrs" step="0.5" min="0" max="100" inputmode="decimal" value="13"></label>
+          <label><span class="k">Month extra rate (×)</span><input type="number" id="pMxMult" step="0.25" min="0" max="4" inputmode="decimal" value="1.5"></label>
+          <label><span class="k">Payday (day of next month)</span><input type="number" id="pPayday" step="1" min="1" max="31" inputmode="numeric" value="28"></label>
+        </div>
+      </details>
+      <label class="contract-only"><span class="k">Hourly rate (€)</span><input type="number" id="payRate" step="0.01" min="0" inputmode="decimal" placeholder="e.g. 18.50"></label>
+      <label class="contract-only"><span class="k">Hours per shift</span><input type="number" id="payShiftHrs" step="0.25" min="1" max="24" inputmode="decimal" value="12"></label>
+      <label class="contract-only"><span class="k">Shift allowance (%)</span><input type="number" id="payAllow" step="0.5" min="0" max="100" inputmode="decimal" value="0"></label>
+      <label class="chk contract-only"><input type="checkbox" id="payLeave" checked><span>Pay annual leave at basic rate</span></label>
+      <div class="fn-row bh-row contract-only">
         <label class="fn-hours"><input type="time" id="payStart" value="07:00" aria-label="Day shift start time"><span class="k">day shift starts</span></label>
         <label class="fn-hours"><input type="time" id="payNightStart" value="19:30" aria-label="Night shift start time"><span class="k">night shift starts</span></label>
         <label class="fn-hours"><input type="number" id="payBhRate" step="0.25" min="1" max="4" inputmode="decimal" value="2" aria-label="Total pay rate for hours worked on a bank holiday"><span class="k">× for hours worked on a bank holiday (code 317 = +1×)</span></label>
         <label class="fn-hours"><input type="number" id="payBhOff" step="0.5" min="0" max="24" inputmode="decimal" value="8" aria-label="Public holiday hours paid per bank holiday"><span class="k">hrs public holiday pay per bank holiday (code 319)</span></label>
       </div>
-      <div class="fn-row">
+      <div class="fn-row contract-only">
         <label class="chk"><input type="checkbox" id="payFn"><span>Fortnight completion pay</span></label>
         <label class="fn-hours"><input type="number" id="payFnHrs" step="0.5" min="0" max="24" inputmode="decimal" value="3" aria-label="Extra hours per complete fortnight"><span class="k">extra hrs per fortnight</span></label>
       </div>
+      <div class="pay-save-row">
+        <button type="button" class="btn ghost" id="payCancelBtn">Cancel</button>
+        <button type="button" class="btn primary" id="paySaveBtn">Save</button>
+      </div>
     </div>
-    <div class="pay-period">
+    <div class="perm-only perm-nav">
+      <button type="button" class="icon-btn" id="pmPrev" aria-label="Previous month">‹</button>
+      <div class="perm-nav-t"><b id="pmTitle"></b><span class="muted" id="pmSub"></span></div>
+      <button type="button" class="icon-btn" id="pmNext" aria-label="Next month">›</button>
+    </div>
+    <div class="pay-period contract-only">
       <span class="k">Pay period</span>
       <div class="quick-row" id="payPresets">
         <button type="button" class="chip-btn" data-p="period">This pay period</button>
@@ -733,8 +791,13 @@
         <label><span class="k">To</span><input type="date" id="payTo"></label>
       </div>
     </div>
+    <div class="seg pay-view" role="group" aria-label="Pay view" id="payViewSeg">
+      <button type="button" data-v="summary" aria-pressed="true">Summary</button>
+      <button type="button" data-v="days" aria-pressed="false">Per day</button>
+    </div>
     <div id="payOut"></div>
-    <p class="pay-rules">Overtime on a Sunday is paid at double time for every hour. On other days, the first 4 hours are time-and-a-half and the rest are double time. Fortnight completion pay, if switched on, adds the extra hours at basic rate once for each pay fortnight. Irish bank holidays are marked BH. Hours worked on the bank holiday itself (midnight to midnight, using your day and night shift start times) get the extra rate (code 317), everyone gets public holiday pay for each bank holiday (code 319), and overtime on a bank holiday is double time. Pay fortnights run Monday to Sunday and are paid the Friday after. Figures are gross, before tax, PRSI and USC.</p>
+    
+    <p class="pay-rules contract-only">Overtime on a Sunday is paid at double time for every hour. On other days, the first 4 hours are time-and-a-half and the rest are double time. Fortnight completion pay, if switched on, adds the extra hours at basic rate once for each pay fortnight. Irish bank holidays are marked BH. Hours worked on the bank holiday itself (midnight to midnight, using your day and night shift start times) get the extra rate (code 317), everyone gets public holiday pay for each bank holiday (code 319), and overtime on a bank holiday is double time. Pay fortnights run Monday to Sunday and are paid the Friday after. Figures are gross, before tax, PRSI and USC.</p>
   </section>
   </div>
   <div class="page" id="page-more" data-page="more" hidden>
@@ -863,6 +926,10 @@
       <button type="button" class="chip-btn" data-h="8">8</button>
       <button type="button" class="chip-btn" data-h="12">12</button>
     </div>
+    <div class="ot-kind seg" role="group" aria-label="Overtime shift" id="otKind" style="width:auto">
+      <button type="button" data-n="0" aria-pressed="true" style="width:auto;padding:0 12px;font-size:13px">Day OT</button>
+      <button type="button" data-n="1" aria-pressed="false" style="width:auto;padding:0 12px;font-size:13px">Night OT</button>
+    </div>
   </div>
   <div class="field">
     <label class="k" for="noteIn">Note</label>
@@ -913,7 +980,8 @@
   const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
   { const c = lsGet("crew2", null); if (c && PATTERN[c]) crew = c; }
   marks = lsGet("marks", {}) || {};
-  let pay = Object.assign({ rate: null, shiftHrs: 12, allow: 0, payLeave: true, fnOn: true, fnHrs: 3, bhRate: 2, bhPhHrs: 8, dayStart: "07:00", nightStart: "19:30", payFreq: "fortnight", monthlyPayday: 28 }, lsGet("pay", {}) || {});
+  const PAY_DEFAULTS = Object.assign({ rate: null, shiftHrs: 12, allow: 0, payLeave: true, fnOn: true, fnHrs: 3, bhRate: 2, bhPhHrs: 8, dayStart: "07:00", nightStart: "19:30", payFreq: "fortnight", monthlyPayday: 28 }, { type: "contract", salary: null, monthHrs: 169, mxMult: 1.5, mxHrs: 13, prem: 33 });
+  let pay = Object.assign({}, PAY_DEFAULTS, lsGet("pay", {}) || {});
 
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -1073,7 +1141,7 @@
     const payLine = (pdRel < 0 ? 'Paid ' : 'Paid on ') + fmt(q.payday, { weekday: "long", day: "numeric", month: "short" }) + ' (' + relative(pdRel) + ')';
     $("sumPay").innerHTML = r.has
       ? '<span>' + payLine + '<br><span class="muted">Estimated gross · ' + hrs(r.hours) + ' hrs</span></span><b id="sumTotalNum">' + money(r.total) + '</b>'
-      : '<span>' + payLine + '<br><span class="muted">Add your hourly rate on the Pay page to see your estimated pay.</span></span>';
+      : '<span>' + payLine + '<br><span class="muted">' + (pay.type === "perm" ? 'Add your yearly salary' : 'Add your hourly rate') + ' on the Pay page to see your estimated pay.</span></span>';
     $("sumCounts").querySelectorAll("div").forEach((d, i) => d.style.setProperty("--r", i));
     const sb = $("sumBody");
     if (sumAnimNext) { sumAnimNext = false; sb.classList.remove("anim"); void sb.offsetWidth; sb.classList.add("anim"); } else sb.classList.remove("anim");
@@ -1351,7 +1419,7 @@
     return { start, end, payday };
   }
   // Whichever pay frequency the user is on (fortnightly or monthly).
-  function periodFor(d, offset) { return pay.payFreq === "month" ? monthPeriodOf(d, offset) : periodOf(d, offset); }
+  function periodFor(d, offset) { return (pay.payFreq === "month" || pay.type === "perm") ? monthPeriodOf(d, offset) : periodOf(d, offset); }
   // A just-ended period keeps counting as "this pay period" until its payday has actually passed,
   // rather than switching over the moment the next period's dates begin.
   function currentOffset() {
@@ -1384,7 +1452,51 @@
     for (let d = r[0]; between(d, r[1]) >= 0 && out.length < 400; d = addDays(d, 1)) out.push(d);
     return out;
   }
+  function payReady() { return pay.type === "perm" ? Number(pay.salary) > 0 : Number(pay.rate) > 0; }
+  function permHourly() { return (Number(pay.salary) || 0) / 12 / (Number(pay.monthHrs) || 169); }
+  function permMonth() {
+    const hr = permHourly(), base = (Number(pay.salary) || 0) / 12;
+    const extra = hr * (Number(pay.mxMult) || 0) * (Number(pay.mxHrs) || 0);
+    const prem = (base + extra) * (Number(pay.prem) || 0) / 100;
+    return { hr, base, extra, prem, gross: base + extra + prem };
+  }
+  // Is this overtime paid at double time for every hour? Sundays, bank holidays,
+  // and night overtime that starts Saturday and runs into Sunday.
+  function otAllDouble(d, m) { return d.getDay() === 0 || !!bankHoliday(d) || (!!m.otNight && d.getDay() === 6); }
+  function calcPerm(days) {
+    const pm = permMonth(), hr = pm.hr, pf = 1 + (Number(pay.prem) || 0) / 100;
+    let dayN = 0, nightN = 0, leaveN = 0, ot15 = 0, ot2 = 0, otSun = 0;
+    const otList = [], months = {};
+    days.forEach(d => {
+      const c = code(d), m = mark(d), al = !!(m && m.al);
+      if (isWorkShift(c)) { if (al) leaveN++; else if (c === "D") dayN++; else nightN++; }
+      const mk = d.getFullYear() + "-" + d.getMonth();
+      months[mk] = months[mk] || { y: d.getFullYear(), m: d.getMonth(), n: 0 };
+      months[mk].n++;
+      if (m && m.ot) {
+        const h = Number(m.otHours) || 0, night = !!m.otNight;
+        if (otAllDouble(d, m)) {
+          const why = d.getDay() === 0 ? "Sunday" : bankHoliday(d) ? "bank holiday" : "Sat night into Sunday";
+          otSun += h; otList.push({ d, h, a: 0, b: 0, sun: h, why, night });
+        } else { const a = Math.min(4, h); ot15 += a; ot2 += h - a; otList.push({ d, h, a, b: h - a, sun: 0, night }); }
+      }
+    });
+    let frac = 0; const monthList = [];
+    Object.values(months).forEach(o => { const dim = new Date(o.y, o.m + 1, 0).getDate(); const f = Math.min(1, o.n / dim); frac += f; monthList.push({ y: o.y, m: o.m, n: o.n, dim, f }); });
+    const r = {
+      perm: true, has: Number(pay.salary) > 0, pm, frac, monthList, hr, pf,
+      dayN, nightN, leaveN, ot15, ot2, otSun, otList,
+      basic: pm.base * frac, extra: pm.extra * frac, prem: pm.prem * frac,
+      o15: ot15 * hr * 1.5, o2: ot2 * hr * 2, oSun: otSun * hr * 2
+    };
+    r.otBase = r.o15 + r.o2 + r.oSun;
+    r.otPrem = r.otBase * (pf - 1);
+    r.total = r.basic + r.extra + r.prem + r.otBase + r.otPrem;
+    r.hours = (Number(pay.monthHrs) || 169) * frac + ot15 + ot2 + otSun;
+    return r;
+  }
   function calcPay(days) {
+    if (pay.type === "perm") return calcPerm(days);
     const rate = Number(pay.rate), sh = Number(pay.shiftHrs) || 0, allow = Number(pay.allow) || 0;
     let dayN = 0, nightN = 0, leaveN = 0, ot15 = 0, ot2 = 0, otSun = 0;
     const otList = [], bhList = [], bhWorked = {};
@@ -1438,6 +1550,26 @@
     if (!$("payOut")) return;
     // settings inputs (don't overwrite what the user is typing)
     const act = document.activeElement;
+    const isPerm = pay.type === "perm";
+    if (isPerm && ["period", "lastperiod", "nextperiod", "month", "lastmonth", "view", "custom"].includes(payPreset)) {
+      payOffset = payPreset === "lastperiod" ? -1 : payPreset === "nextperiod" ? 1 : 0; payPreset = "poff";
+    }
+    if (isPerm && payPreset === "poff") {
+      const q = periodFor(today, currentOffset() + payOffset), pd = between(today, q.payday);
+      $("pmTitle").textContent = fmt(q.start, { month: "long", year: "numeric" });
+      $("pmSub").textContent = (pd < 0 ? "Paid " : "Paid on ") + fmtShort(q.payday) + " (" + relative(pd) + ")";
+    } else if (isPerm) { $("pmTitle").textContent = "Selected days"; $("pmSub").textContent = ""; }
+    if (act !== $("pPayday")) $("pPayday").value = pay.monthlyPayday || 28;
+    document.body.classList.toggle("pay-perm", isPerm);
+    document.querySelectorAll("#payTypeSeg [data-t]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.t === (pay.type || "contract"))));
+    if (act !== $("pSalary")) $("pSalary").value = pay.salary == null || pay.salary === "" ? "" : pay.salary;
+    if (act !== $("pMonthHrs")) $("pMonthHrs").value = pay.monthHrs;
+    if (act !== $("pPrem")) $("pPrem").value = pay.prem;
+    if (act !== $("pMxHrs")) $("pMxHrs").value = pay.mxHrs;
+    if (act !== $("pMxMult")) $("pMxMult").value = pay.mxMult;
+    { const pm = permMonth(); $("pHourlyNote").innerHTML = Number(pay.salary) > 0
+        ? money(pm.hr) + "/h · <b>" + money(pm.gross) + "</b> a month"
+        : "Enter your yearly salary."; }
     if (act !== $("payRate")) $("payRate").value = pay.rate == null || pay.rate === "" ? "" : pay.rate;
     if (act !== $("payShiftHrs")) $("payShiftHrs").value = pay.shiftHrs;
     if (act !== $("payAllow")) $("payAllow").value = pay.allow;
@@ -1450,9 +1582,11 @@
     if (act !== $("payStart")) $("payStart").value = pay.dayStart || "07:00";
     if (act !== $("payNightStart")) $("payNightStart").value = pay.nightStart || "19:30";
     document.querySelectorAll("#payFreqSeg [data-f]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.f === (pay.payFreq || "fortnight"))));
-    $("monthlyPaydayRow").hidden = pay.payFreq !== "month";
+    $("monthlyPaydayRow").hidden = pay.payFreq !== "month" && pay.type !== "perm";
     if (act !== $("payMonthlyDay")) $("payMonthlyDay").value = pay.monthlyPayday || 28;
-    $("payEditBtn").textContent = Number(pay.rate) > 0
+    $("payEditBtn").textContent = isPerm
+      ? (Number(pay.salary) > 0 ? "Edit salary" : "Add salary")
+      : Number(pay.rate) > 0
       ? money(Number(pay.rate)) + "/h · " + hrs(Number(pay.shiftHrs) || 0) + "h shifts" + (Number(pay.allow) ? " · +" + hrs(Number(pay.allow)) + "%" : "") + (pay.fnOn ? " · +" + hrs(Number(pay.fnHrs) || 0) + "h/fortnight" : "") + " · " + (pay.dayStart || "07:00") + "/" + (pay.nightStart || "19:30")
       : "Pay details";
 
@@ -1478,6 +1612,9 @@
 
     const r = calcPay(days);
     const amt = v => r.has ? money(v) : "—";
+    document.querySelectorAll("#payViewSeg [data-v]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === payView)));
+    if (payView === "days") { renderDaysOut(out, r, label, days); return; }
+    if (r.perm) { renderPermOut(out, r, label, days); return; }
     const rows = [];
     rows.push('<tr><td><i class="sw D"></i>Basic pay<small>' + plural(r.dayN, "day shift") + ' · ' + plural(r.nightN, "night shift") + '</small></td><td class="num">' + hrs(r.basicH) + '</td><td class="num">' + amt(r.basic) + '</td></tr>');
     if (Number(pay.allow) > 0) rows.push('<tr><td>Shift allowance<small>' + hrs(Number(pay.allow)) + '% of basic</small></td><td class="num"></td><td class="num">' + amt(r.allowance) + '</td></tr>');
@@ -1519,12 +1656,139 @@
     if (r.has) { countUp($("payTotalNum"), lastPayTotal == null ? 0 : lastPayTotal, r.total, money); lastPayTotal = r.total; }
   }
 
-  let payTimer = null;
+  function renderPermOut(out, r, label, days) {
+    const amt = v => r.has ? money(v) : "—";
+    const pct = hrs(Number(pay.prem) || 0);
+    const otH = r.ot15 + r.ot2 + r.otSun;
+    const salaryTotal = r.basic + r.extra + r.prem, otTotal = r.otBase + r.otPrem;
+    const part = !(r.monthList.length === 1 && r.frac === 1);
+    const items = [];
+    items.push('<li><span>Monthly pay<small>Salary + month extra + ' + pct + '% premium' + (part ? ' · part month' : '') + '</small></span><b>' + amt(salaryTotal) + '</b></li>');
+    items.push('<li><span>Overtime<small>' + (otH ? hrs(otH) + ' hrs · ' + plural(r.otList.length, "day") : 'None marked. Tap a day in the calendar to add it.') + '</small></span><b>' + (otH ? amt(otTotal) : money(0)) + '</b></li>');
+    let otDays = "";
+    if (r.otList.length) {
+      otDays = '<ul class="ot-days">' + r.otList.map(o => {
+        const base = (o.sun * 2 + o.a * 1.5 + o.b * 2) * r.hr;
+        return '<li><span>' + fmtShort(o.d) + ' · ' + (o.night ? 'night' : 'day') + '<br><small class="muted">' +
+          (o.sun ? hrs(o.sun) + 'h × 2 (' + o.why + ')' : hrs(o.a) + 'h × 1.5' + (o.b ? ' + ' + hrs(o.b) + 'h × 2' : '')) + ' + ' + pct + '%' +
+          '</small></span><b>' + (r.has ? money(base * r.pf) : hrs(o.h) + 'h') + '</b></li>';
+      }).join("") + '</ul>';
+    }
+    const mLabel = r.monthList.map(o => fmt(new Date(o.y, o.m, 1), { month: "short" }) + " " + (o.f === 1 ? "full month" : o.n + " of " + o.dim + " days")).join(" · ");
+    const how = '<details><summary>How it\'s worked out</summary><ul class="ot-days">' +
+      '<li><span>Hourly pay<br><small class="muted">' + money(Number(pay.salary) || 0) + ' ÷ 12 ÷ ' + hrs(Number(pay.monthHrs) || 169) + 'h</small></span><b>' + money(r.hr) + '</b></li>' +
+      '<li><span>Basic salary<br><small class="muted">' + esc(mLabel) + '</small></span><b>' + amt(r.basic) + '</b></li>' +
+      '<li><span>Month extra<br><small class="muted">' + hrs(Number(pay.mxHrs) || 0) + 'h × ' + hrs(Number(pay.mxMult) || 0) + ' × hourly pay</small></span><b>' + amt(r.extra) + '</b></li>' +
+      '<li><span>Shift premium<br><small class="muted">' + pct + '% of basic + month extra</small></span><b>' + amt(r.prem) + '</b></li>' +
+      (otH ? '<li><span>Overtime before premium<br><small class="muted">' + [r.ot15 ? hrs(r.ot15) + 'h × 1.5' : '', (r.ot2 + r.otSun) ? hrs(r.ot2 + r.otSun) + 'h × 2' : ''].filter(Boolean).join(' + ') + '</small></span><b>' + amt(r.otBase) + '</b></li>' +
+        '<li><span>Premium on overtime<br><small class="muted">' + pct + '%</small></span><b>' + amt(r.otPrem) + '</b></li>' : '') +
+      '</ul><p class="pay-rules" style="margin-top:8px">Overtime Mon–Sat: first 4 hours × 1.5, then × 2. Sunday, bank holiday, and Saturday night into Sunday: every hour × 2. The ' + pct + '% premium is added on top. Gross, before tax, PRSI and USC.</p></details>';
+    out.innerHTML =
+      '<div style="display:grid;gap:12px">' +
+      '<div class="pay-total"><div><span>Estimated gross</span><br><b id="payTotalNum">' + (r.has ? money(r.total) : "—") + '</b></div>' +
+      '<span>' + (r.has ? (payPreset === "sel" ? esc(label) : fmtShort(days[0]) + ' – ' + fmtShort(days[days.length - 1])) : 'Enter your yearly salary above') + '</span></div>' +
+      '<ul class="simple-list">' + items.join("") + '</ul>' +
+      (otDays ? '<details><summary>Overtime by day</summary>' + otDays + '</details>' : '') +
+      how + '</div>';
+    const pk = "perm|" + payPreset + "|" + (days.length ? key(days[0]) + key(days[days.length - 1]) : "");
+    if (pk !== out.dataset.pk || payAnimNext) { out.dataset.pk = pk; payAnimNext = false; out.classList.remove("anim"); void out.offsetWidth; out.classList.add("anim"); }
+    else out.classList.remove("anim");
+    if (r.has) { countUp($("payTotalNum"), lastPayTotal == null ? 0 : lastPayTotal, r.total, money); lastPayTotal = r.total; }
+  }
+
+  let payView = (() => { try { return localStorage.getItem("payView") === "days" ? "days" : "summary"; } catch (e) { return "summary"; } })();
+  $("payViewSeg").addEventListener("click", e => {
+    const b = e.target.closest("[data-v]"); if (!b) return;
+    payView = b.dataset.v; try { localStorage.setItem("payView", payView); } catch (e) {}
+    payAnimNext = true; renderPay();
+  });
+  // Earnings for each day in the range.
+  // Permanent: the month's pay (salary + month extra + premium) is spread evenly over the
+  // shifts rostered that month (leave days included, since salary is paid on leave), plus that day's overtime.
+  // Contract: that day's basic, allowance, leave, bank holiday pay and overtime.
+  function dayEarnings(days) {
+    const perm = pay.type === "perm", pm = perm ? permMonth() : null, shiftsInMonth = {};
+    const shiftsOf = d => {
+      const k = d.getFullYear() + "-" + d.getMonth();
+      if (shiftsInMonth[k] == null) {
+        let n = 0; const dim = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+        for (let i = 1; i <= dim; i++) if (isWorkShift(code(new Date(d.getFullYear(), d.getMonth(), i)))) n++;
+        shiftsInMonth[k] = n;
+      }
+      return shiftsInMonth[k];
+    };
+    return days.map(d => {
+      const c = code(d), m = mark(d) || {}, al = !!m.al, work = isWorkShift(c);
+      let base = 0, ot = 0, otH = m.ot ? Number(m.otHours) || 0 : 0, note = "";
+      if (perm) {
+        const n = shiftsOf(d);
+        if (work && n) base = pm.gross / n;
+        if (otH) { const r1 = calcPerm([d]); ot = r1.otBase + r1.otPrem; }
+      } else {
+        const r1 = calcPay([d]);
+        ot = r1.o15 + r1.o2 + r1.oSun;
+        base = r1.total - ot;
+      }
+      const what = al && work ? "Annual leave" : work ? (c === "D" ? "Day shift" : "Night shift") : (otH ? "Day off" : LABEL[c] || "Day off");
+      if (otH) note = "+" + hrs(otH) + "h overtime" + (m.otNight ? " (night)" : "");
+      const bh = bankHoliday(d); if (bh) note = (note ? note + " · " : "") + "BH";
+      return { d, c, al, work, what, note, base, ot, total: base + ot };
+    });
+  }
+  function renderDaysOut(out, r, label, days) {
+    const has = r.has, list = dayEarnings(days);
+    const max = Math.max(1, ...list.map(x => x.total));
+    const worked = list.filter(x => x.work || x.ot > 0);
+    const shown = list.filter(x => x.total > 0 || x.work);
+    const sum = list.reduce((a, x) => a + x.total, 0);
+    const extra = r.total - sum;   // amounts not tied to a single day (fortnight completion pay, part-month rounding)
+    const rows = list.map(x => {
+      const isNow = between(today, x.d) === 0, off = !x.work && !x.ot;
+      const sw = x.al ? "L" : x.work ? (x.c === "D" ? "D" : "N") : "";
+      return '<li class="' + (off ? "off" : "") + (isNow ? " now" : "") + '">' +
+        '<div class="dd"><b>' + x.d.getDate() + '</b><span>' + fmt(x.d, { weekday: "short" }) + '</span></div>' +
+        '<div class="what"><span><i class="sw ' + sw + '" style="margin-right:6px"></i>' + esc(x.what) + '</span>' +
+        (x.note ? '<small>' + esc(x.note) + '</small>' : '') +
+        (has && x.total ? '<div style="display:flex;gap:2px"><div class="bar base" style="width:' + (x.base / max * 100) + '%"></div>' + (x.ot ? '<div class="bar" style="width:' + (x.ot / max * 100) + '%"></div>' : '') + '</div>' : '') +
+        '</div><div class="amt">' + (has ? (x.total ? money(x.total) : "—") : "") + '</div></li>';
+    }).join("");
+    const avg = worked.length ? sum / worked.length : 0;
+    out.innerHTML =
+      '<div style="display:grid;gap:12px">' +
+      '<div class="pay-total"><div><span>Estimated gross</span><br><b id="payTotalNum">' + (has ? money(r.total) : "—") + '</b></div>' +
+      '<span>' + (has ? (payPreset === "sel" ? esc(label) : fmtShort(days[0]) + ' – ' + fmtShort(days[days.length - 1])) : (pay.type === "perm" ? 'Enter your yearly salary above' : 'Enter your hourly rate above')) + '</span></div>' +
+      (has ? '<div class="day-avg"><span>' + plural(worked.length, "day") + ' worked · average ' + money(avg) + ' a day</span><span><i class="sw" style="background:var(--ink);opacity:.4;border:0"></i> shift &nbsp;<i class="sw OT"></i> overtime</span></div>' : '') +
+      '<ul class="day-list">' + rows + '</ul>' +
+      (has && Math.abs(extra) >= 0.01 ? '<ul class="simple-list"><li><span>Not tied to one day<small>' + (pay.type === "perm" ? 'Part-month adjustment' : 'Fortnight completion pay') + '</small></span><b>' + money(extra) + '</b></li></ul>' : '') +
+      (pay.type === "perm" ? '<p class="pay-rules">Your monthly pay is spread evenly over the shifts rostered that month, including leave days. Overtime is added on the day you work it.</p>' : '') +
+      '</div>';
+    const pk = "days|" + pay.type + "|" + payPreset + "|" + (days.length ? key(days[0]) + key(days[days.length - 1]) : "");
+    if (pk !== out.dataset.pk || payAnimNext) { out.dataset.pk = pk; payAnimNext = false; out.classList.remove("anim"); void out.offsetWidth; out.classList.add("anim"); }
+    else out.classList.remove("anim");
+    if (has) { countUp($("payTotalNum"), lastPayTotal == null ? 0 : lastPayTotal, r.total, money); lastPayTotal = r.total; }
+  }
+
+  let payTimer = null, payDirtyUntil = 0;
+  function flushPay() {
+    clearTimeout(payTimer);
+    lsSet("pay", pay);
+    if (store === "cloud" && db && uid && !readOnly) {
+      payDirtyUntil = Date.now() + 4000;
+      return db.collection("data/users/" + uid).doc("settings").set({ crew, pay: Object.assign({}, pay) })
+        .then(() => { payDirtyUntil = Date.now() + 1500; return true; }).catch(() => false);
+    }
+    return Promise.resolve(true);
+  }
   function savePay() {
     lsSet("pay", pay);
     clearTimeout(payTimer);
+    payDirtyUntil = Date.now() + 4000;   // ignore older synced copies while this change is saving
     payTimer = setTimeout(() => {
-      if (store === "cloud" && db && uid && !readOnly) db.collection("data/users/" + uid).doc("settings").set({ crew, pay }).catch(() => {});
+      if (store === "cloud" && db && uid && !readOnly) {
+        payDirtyUntil = Date.now() + 4000;
+        db.collection("data/users/" + uid).doc("settings").set({ crew, pay: Object.assign({}, pay) })
+          .then(() => { payDirtyUntil = Date.now() + 1500; }).catch(() => {});
+      }
     }, 800);
   }
   function readPayInputs() {
@@ -1539,6 +1803,12 @@
     const bo = parseFloat($("payBhOff").value); if (bo >= 0 && bo <= 24) pay.bhPhHrs = bo;
     if (/^\d{2}:\d{2}$/.test($("payStart").value)) pay.dayStart = $("payStart").value;
     if (/^\d{2}:\d{2}$/.test($("payNightStart").value)) pay.nightStart = $("payNightStart").value;
+    const sv = $("pSalary").value.trim(); pay.salary = sv === "" ? null : Math.max(0, parseFloat(sv) || 0);
+    const mh = parseFloat($("pMonthHrs").value); if (mh > 0 && mh <= 400) pay.monthHrs = mh;
+    const pp = parseFloat($("pPrem").value); if (pp >= 0 && pp <= 100) pay.prem = pp;
+    const xh = parseFloat($("pMxHrs").value); if (xh >= 0 && xh <= 100) pay.mxHrs = xh;
+    const xm = parseFloat($("pMxMult").value); if (xm >= 0 && xm <= 4) pay.mxMult = xm;
+    const ppd = parseInt($("pPayday").value, 10); if (pay.type === "perm" && ppd >= 1 && ppd <= 31) { pay.monthlyPayday = ppd; $("payMonthlyDay").value = ppd; }
     const md = parseInt($("payMonthlyDay").value, 10); if (md >= 1 && md <= 31) pay.monthlyPayday = md;
     savePay(); renderPay();
   }
@@ -1551,16 +1821,38 @@
   $("payStart").addEventListener("change", readPayInputs);
   $("payNightStart").addEventListener("change", readPayInputs);
   $("payMonthlyDay").addEventListener("input", readPayInputs);
+  $("pmPrev").addEventListener("click", () => { payPreset = "poff"; payOffset--; renderPay(); });
+  $("pmNext").addEventListener("click", () => { payPreset = "poff"; payOffset++; renderPay(); });
+  ["pSalary", "pMonthHrs", "pPrem", "pMxHrs", "pMxMult", "pPayday"].forEach(id => $(id).addEventListener("input", () => { readPayInputs(); renderSummary(); }));
+  $("payTypeSeg").addEventListener("click", e => {
+    const b = e.target.closest("[data-t]"); if (!b) return;
+    pay.type = b.dataset.t; if (pay.type === "contract") payPreset = "period"; lastPayTotal = null; $("paySettings").hidden = payReady(); $("payEditBtn").setAttribute("aria-expanded", String(!payReady())); savePay(); renderPay(); renderSummary();
+  });
   $("payFreqSeg").addEventListener("click", e => {
     const b = e.target.closest("[data-f]"); if (!b) return;
     pay.payFreq = b.dataset.f; savePay(); renderPay(); renderSummary();
   });
+  let payBeforeEdit = null;
+  function closePaySettings() { $("paySettings").hidden = true; $("payEditBtn").setAttribute("aria-expanded", "false"); payBeforeEdit = null; }
+  $("paySaveBtn").addEventListener("click", async () => {
+    readPayInputs();
+    closePaySettings(); renderPay(); renderSummary();
+    const ok = await flushPay();
+    showToast(ok ? "Pay details saved" : "Saved on this device. Couldn't reach your account, will retry on next change.");
+  });
+  $("payCancelBtn").addEventListener("click", () => {
+    if (payBeforeEdit) { pay = Object.assign({}, payBeforeEdit); flushPay(); }
+    closePaySettings(); renderPay(); renderSummary();
+  });
+  // save straight away if the app is closed or put in the background mid-edit
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden" && payTimer) flushPay(); });
   $("payEditBtn").addEventListener("click", () => {
     const open = $("paySettings").hidden;
+    if (open) payBeforeEdit = Object.assign({}, pay);
     $("paySettings").hidden = !open; $("payEditBtn").setAttribute("aria-expanded", String(open));
-    if (open) $("payRate").focus();
+    if (open) (pay.type === "perm" ? $("pSalary") : $("payRate")).focus();
   });
-  if (Number(pay.rate) > 0) { $("paySettings").hidden = true; $("payEditBtn").setAttribute("aria-expanded", "false"); }
+  if (payReady()) { $("paySettings").hidden = true; $("payEditBtn").setAttribute("aria-expanded", "false"); }
   $("payPresets").addEventListener("click", e => {
     const b = e.target.closest("[data-p]"); if (!b) return;
     payPreset = b.dataset.p; renderPay();
@@ -1588,6 +1880,7 @@
     $("optALdesc").textContent = isWorkShift(c) ? "Take this shift as leave." : "You're not rostered this day, so it won't count against your leave.";
     $("optOT").checked = !!m.ot;
     $("otHours").value = m.otHours || 12;
+    setOtKind(!!m.otNight);
     $("noteIn").value = m.note || "";
     $("sheetMsg").hidden = true;
     ["optAL", "optOT", "otHours", "noteIn", "btnSave", "btnClear"].forEach(id => $(id).disabled = readOnly);
@@ -1605,7 +1898,7 @@
     const note = $("noteIn").value.trim();
     const k = key(editing), d = editing;
     const prev = marks[k] ? Object.assign({}, marks[k]) : null;
-    const value = (al || ot || note) ? { al, ot, otHours: ot ? h : 0, note } : null;
+    const value = (al || ot || note) ? { al, ot, otHours: ot ? h : 0, otNight: ot ? otNightSel : false, note } : null;
     closeSheet();
     saveMany({ [k]: value });
     showToast("Saved " + fmtShort(d), () => saveMany({ [k]: prev }));
@@ -1620,6 +1913,9 @@
   });
   $("btnCancel").addEventListener("click", closeSheet);
   $("scrim").addEventListener("click", closeSheet);
+  let otNightSel = false;
+  function setOtKind(n) { otNightSel = n; document.querySelectorAll("#otKind [data-n]").forEach(b => b.setAttribute("aria-pressed", String((b.dataset.n === "1") === n))); }
+  $("otKind").addEventListener("click", e => { const b = e.target.closest("[data-n]"); if (!b || readOnly) return; setOtKind(b.dataset.n === "1"); $("optOT").checked = true; });
   $("optOT").addEventListener("change", () => { if ($("optOT").checked && !$("otHours").value) $("otHours").value = 12; });
   $("otHours").addEventListener("input", () => { if ($("otHours").value) $("optOT").checked = true; });
   document.querySelectorAll(".opt [data-h]").forEach(b => b.addEventListener("click", () => { $("otHours").value = b.dataset.h; $("optOT").checked = true; }));
@@ -1804,8 +2100,8 @@
         const next = {}; let savedCrew = null;
         snap.docs.forEach(doc => {
           const v = doc.data(); if (!v) return;
-          if (doc.id === "settings") { savedCrew = v.crew; if (v.pay && typeof v.pay === "object") { pay = Object.assign({ rate: null, shiftHrs: 12, allow: 0, payLeave: true, fnOn: true, fnHrs: 3, bhRate: 2, bhPhHrs: 8, dayStart: "07:00", nightStart: "19:30", payFreq: "fortnight", monthlyPayday: 28 }, v.pay); lsSet("pay", pay); if (Number(pay.rate) > 0 && document.activeElement !== $("payRate")) { $("paySettings").hidden = true; $("payEditBtn").setAttribute("aria-expanded", "false"); } } return; }
-          if (v.date) next[v.date] = { al: !!v.al, ot: !!v.ot, otHours: Number(v.otHours) || 0, note: v.note || "" };
+          if (doc.id === "settings") { savedCrew = v.crew; if (v.pay && typeof v.pay === "object" && Date.now() > payDirtyUntil) { pay = Object.assign({}, PAY_DEFAULTS, v.pay); lsSet("pay", pay); if (payReady() && document.activeElement !== $("payRate")) { $("paySettings").hidden = true; $("payEditBtn").setAttribute("aria-expanded", "false"); } } return; }
+          if (v.date) next[v.date] = { al: !!v.al, ot: !!v.ot, otHours: Number(v.otHours) || 0, otNight: !!v.otNight, note: v.note || "" };
         });
         if (first) {
           first = false;
